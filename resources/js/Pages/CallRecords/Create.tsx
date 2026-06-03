@@ -4,281 +4,420 @@ import { useForm, Link } from '@inertiajs/react';
 interface Props {
     reasons: any[];
     products: any[];
+    districts: any[];
 }
 
-export default function Create({ reasons = [], products = [] }: Props) {
+const inputClass =
+    'w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-150';
 
+const labelClass = 'block text-xs font-medium text-gray-500 mb-1.5';
+
+const sectionClass = 'bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden';
+
+const sectionHeaderClass =
+    'flex items-center gap-2 px-5 py-3.5 border-b border-gray-100 bg-gray-50/60';
+
+const sectionTitleClass = 'text-xs font-semibold text-gray-500 uppercase tracking-wider';
+
+const STATUS_OPTIONS = [
+    {
+        value: 'pending',
+        label: 'Pending',
+        icon: (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+            </svg>
+        ),
+        active: 'bg-blue-50 border-blue-400 text-blue-700',
+        inactive: 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50',
+    },
+    {
+        value: 'complete',
+        label: 'Complete',
+        icon: (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        ),
+        active: 'bg-emerald-50 border-emerald-400 text-emerald-700',
+        inactive: 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50',
+    },
+    {
+        value: 'close',
+        label: 'Close',
+        icon: (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        ),
+        active: 'bg-gray-100 border-gray-400 text-gray-700',
+        inactive: 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50',
+    },
+    {
+        value: 'fail',
+        label: 'Fail',
+        icon: (
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            </svg>
+        ),
+        active: 'bg-red-50 border-red-400 text-red-700',
+        inactive: 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50',
+    },
+];
+
+export default function Create({
+    reasons = [],
+    products = [],
+    districts = [],
+}: Props) {
     const { data, setData, post, processing, errors } = useForm({
         CustomerName: '',
         CustomerPhoneNumber: '',
         CustomerAddress: '',
         CustomerEmail: '',
-        reason_id: '',
-        product: '',
         CustomerCompany: '',
+
+        districtId: '',
+        reason: '',
+
+        productId: '',
+        productModel: '',
+
+        productPrice: '',
+        discountPrice: '',
+
+        callback_date: '',
+
         status: 'pending',
     });
 
-    const submit = (e: React.FormEvent) => {
-        e.preventDefault();
-        post(route('call-records.store'));
-    };
+    const selectedProduct = products.find((p: any) => p.id == data.productId);
 
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Create Call Record
-                </h2>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                            <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 className="text-base font-semibold text-gray-800 leading-tight">
+                                Create Call Record
+                            </h2>
+                            <p className="text-xs text-gray-400">Log a new customer call</p>
+                        </div>
+                    </div>
+                    <Link
+                        href={route('call-records.index')}
+                        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Back
+                    </Link>
+                </div>
             }
         >
-            <div className="py-6 px-6">
-                <div className="max-w-5xl mx-auto">
-
-                    {/* Header */}
-                    <div className="mb-6 flex items-center justify-between">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-800">
-                                New Call Record
-                            </h1>
-                            <p className="text-gray-500 mt-1">
-                                Add customer call details and follow-up information
-                            </p>
+            <div className="p-6 max-w-4xl mx-auto space-y-4">
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        post(route('call-records.store'));
+                    }}
+                    className="space-y-4"
+                >
+                    {/* ── CUSTOMER INFORMATION ── */}
+                    <div className={sectionClass}>
+                        <div className={sectionHeaderClass}>
+                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <span className={sectionTitleClass}>Customer information</span>
                         </div>
+                        <div className="p-5 grid grid-cols-2 gap-4">
+                            <div>
+                                <label className={labelClass}>Customer name</label>
+                                <input
+                                    className={inputClass}
+                                    placeholder="e.g. Nuwan Perera"
+                                    value={data.CustomerName}
+                                    onChange={(e) => setData('CustomerName', e.target.value)}
+                                />
+                                {errors.CustomerName && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerName}</p>
+                                )}
+                            </div>
 
-                        <Link
-                            href={route('call-records.index')}
-                            className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200"
-                        >
-                            Back
-                        </Link>
+                            <div>
+                                <label className={labelClass}>Phone number</label>
+                                <input
+                                    className={inputClass}
+                                    placeholder="e.g. 077 123 4567"
+                                    value={data.CustomerPhoneNumber}
+                                    onChange={(e) => setData('CustomerPhoneNumber', e.target.value)}
+                                />
+                                {errors.CustomerPhoneNumber && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerPhoneNumber}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Email address</label>
+                                <input
+                                    type="email"
+                                    className={inputClass}
+                                    placeholder="nuwan@example.com"
+                                    value={data.CustomerEmail}
+                                    onChange={(e) => setData('CustomerEmail', e.target.value)}
+                                />
+                                {errors.CustomerEmail && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerEmail}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Company</label>
+                                <input
+                                    className={inputClass}
+                                    placeholder="Company name"
+                                    value={data.CustomerCompany}
+                                    onChange={(e) => setData('CustomerCompany', e.target.value)}
+                                />
+                                {errors.CustomerCompany && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerCompany}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Address</label>
+                                <textarea
+                                    className={inputClass + ' resize-none h-20'}
+                                    placeholder="Street, city..."
+                                    value={data.CustomerAddress}
+                                    onChange={(e) => setData('CustomerAddress', e.target.value)}
+                                />
+                                {errors.CustomerAddress && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerAddress}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>District</label>
+                                <select
+                                    className={inputClass}
+                                    value={data.districtId}
+                                    onChange={(e) => setData('districtId', e.target.value)}
+                                >
+                                    <option value="">Select district</option>
+                                    {districts.map((d: any) => (
+                                        <option key={d.id} value={d.id}>
+                                            {d.districtName}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.districtId && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.districtId}</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
-                    <form onSubmit={submit}>
-                        <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
-
-                            {/* Card Header */}
-                            <div className="border-b px-6 py-4 bg-gray-50">
-                                <h3 className="font-semibold text-lg">
-                                    Customer Information
-                                </h3>
-                            </div>
-
-                            {/* Form Body */}
-                            <div className="p-6">
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                                    {/* Customer Name */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Customer Name *
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            value={data.CustomerName}
-                                            onChange={(e) =>
-                                                setData('CustomerName', e.target.value)
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                        />
-
-                                        {errors.CustomerName && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {errors.CustomerName}
-                                            </p>
-                                        )}
-                                    </div>
-
-                                    {/* Phone */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Phone Number *
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            value={data.CustomerPhoneNumber}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'CustomerPhoneNumber',
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                        />
-                                    </div>
-
-                                    {/* Email */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Email
-                                        </label>
-
-                                        <input
-                                            type="email"
-                                            value={data.CustomerEmail}
-                                            onChange={(e) =>
-                                                setData('CustomerEmail', e.target.value)
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                        />
-                                    </div>
-
-                                    {/* Company */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Company
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            value={data.CustomerCompany}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'CustomerCompany',
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                        />
-                                    </div>
-
-                                    {/* Reason */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Reason
-                                        </label>
-
-                                        <select
-                                            value={data.reason_id}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'reason_id',
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                        >
-                                            <option value="">
-                                                Select Reason
-                                            </option>
-
-                                            {reasons.map((reason) => (
-                                                <option
-                                                    key={reason.id}
-                                                    value={reason.id}
-                                                >
-                                                    {reason.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Product */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Product
-                                        </label>
-
-                                        <select
-                                            value={data.product}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'product',
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                        >
-                                            <option value="">
-                                                Select Product
-                                            </option>
-
-                                            {products.map((product) => (
-                                                <option
-                                                    key={product.id}
-                                                    value={product.name}
-                                                >
-                                                    {product.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    {/* Status */}
-                                    <div>
-                                        <label className="block mb-2 text-sm font-medium">
-                                            Status
-                                        </label>
-
-                                        <select
-                                            value={data.status}
-                                            onChange={(e) =>
-                                                setData('status', e.target.value)
-                                            }
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                        >
-                                            <option value="pending">
-                                                Pending
-                                            </option>
-                                            <option value="complete">
-                                                Complete
-                                            </option>
-                                            <option value="close">
-                                                Close
-                                            </option>
-                                            <option value="fail">
-                                                Fail
-                                            </option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                {/* Address */}
-                                <div className="mt-5">
-                                    <label className="block mb-2 text-sm font-medium">
-                                        Address
-                                    </label>
-
-                                    <textarea
-                                        rows={4}
-                                        value={data.CustomerAddress}
-                                        onChange={(e) =>
-                                            setData(
-                                                'CustomerAddress',
-                                                e.target.value
-                                            )
-                                        }
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-3"
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Footer */}
-                            <div className="border-t bg-gray-50 px-6 py-4 flex justify-end gap-3">
-                                <Link
-                                    href={route('call-records.index')}
-                                    className="rounded-lg bg-gray-200 px-5 py-2 text-gray-700 hover:bg-gray-300"
-                                >
-                                    Cancel
-                                </Link>
-
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="rounded-lg bg-green-600 px-6 py-2 text-white hover:bg-green-700 disabled:opacity-50"
-                                >
-                                    {processing
-                                        ? 'Saving...'
-                                        : 'Save Call Record'}
-                                </button>
-                            </div>
-
+                    {/* ── PRODUCT & PRICING ── */}
+                    <div className={sectionClass}>
+                        <div className={sectionHeaderClass}>
+                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+                            </svg>
+                            <span className={sectionTitleClass}>Product &amp; pricing</span>
                         </div>
-                    </form>
-                </div>
+                        <div className="p-5 grid grid-cols-2 gap-4">
+                            <div>
+                                <label className={labelClass}>Product</label>
+                                <select
+                                    className={inputClass}
+                                    value={data.productId}
+                                    onChange={(e) => {
+                                        setData('productId', e.target.value);
+                                        setData('productModel', '');
+                                        setData('productPrice', '');
+                                    }}
+                                >
+                                    <option value="">Select product</option>
+                                    {products.map((p: any) => (
+                                        <option key={p.id} value={p.id}>
+                                            {p.productName}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.productId && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.productId}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Model</label>
+                                <select
+                                    className={inputClass + (!selectedProduct ? ' opacity-50 cursor-not-allowed' : '')}
+                                    value={data.productModel}
+                                    disabled={!selectedProduct}
+                                    onChange={(e) => {
+                                        const model = selectedProduct?.models?.find(
+                                            (m: any) => m.id == e.target.value
+                                        );
+                                        setData('productModel', e.target.value);
+                                        if (model) setData('productPrice', model.price);
+                                    }}
+                                >
+                                    <option value="">Select model</option>
+                                    {selectedProduct?.models?.map((m: any) => (
+                                        <option key={m.id} value={m.id}>
+                                            {m.productModel}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.productModel && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.productModel}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Unit price</label>
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50">
+                                    <svg className="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
+                                    </svg>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {data.productPrice || <span className="font-normal text-gray-400">—</span>}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Discount price</label>
+                                <input
+                                    type="number"
+                                    className={inputClass}
+                                    placeholder="0.00"
+                                    value={data.discountPrice}
+                                    onChange={(e) => setData('discountPrice', e.target.value)}
+                                />
+                                {errors.discountPrice && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.discountPrice}</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── CALL DETAILS ── */}
+                    <div className={sectionClass}>
+                        <div className={sectionHeaderClass}>
+                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className={sectionTitleClass}>Call details</span>
+                        </div>
+                        <div className="p-5 grid grid-cols-2 gap-4">
+                            <div>
+                                <label className={labelClass}>Reason</label>
+                                <select
+                                    className={inputClass}
+                                    value={data.reason}
+                                    onChange={(e) => setData('reason', e.target.value)}
+                                >
+                                    <option value="">Select reason</option>
+                                    {reasons.map((r: any) => (
+                                        <option key={r.id} value={r.id}>
+                                            {r.reason}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.reason && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.reason}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className={labelClass}>Callback date</label>
+                                <input
+                                    type="date"
+                                    className={inputClass}
+                                    value={data.callback_date}
+                                    onChange={(e) => setData('callback_date', e.target.value)}
+                                />
+                                {errors.callback_date && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.callback_date}</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── STATUS ── */}
+                    <div className={sectionClass}>
+                        <div className={sectionHeaderClass}>
+                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <circle cx="12" cy="12" r="10" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01" />
+                            </svg>
+                            <span className={sectionTitleClass}>Status</span>
+                        </div>
+                        <div className="p-5">
+                            <div className="grid grid-cols-4 gap-2.5">
+                                {STATUS_OPTIONS.map((opt) => (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        onClick={() => setData('status', opt.value)}
+                                        className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border text-xs font-medium transition-all duration-150 ${data.status === opt.value ? opt.active : opt.inactive
+                                            }`}
+                                    >
+                                        {opt.icon}
+                                        {opt.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ── SUBMIT ── */}
+                    <div className="flex items-center justify-between pt-1">
+                        <Link
+                            href={route('call-records.index')}
+                            className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Cancel
+                        </Link>
+
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors duration-150"
+                        >
+                            {processing ? (
+                                <>
+                                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                    </svg>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                    </svg>
+                                    Save record
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
             </div>
         </AuthenticatedLayout>
     );

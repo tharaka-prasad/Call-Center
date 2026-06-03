@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\CallRecorde;
+use App\Models\District;
+use App\Models\Product;
+use App\Models\Reason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -28,48 +31,78 @@ class CallRecordeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        return Inertia::render('CallRecords/Create');
-    }
+   public function create()
+{
+    $reasons = Reason::all();
+
+    $products = Product::with('models')->get();
+    $districts = District::all(); // ✅ NEW
+
+
+    return Inertia::render('CallRecords/Create', [
+        'reasons' => $reasons,
+        'products' => $products,
+        'districts' => $districts,
+    ]);
+}
 
     /**
-     * Store a newly created resource in storage.
+     * Store new call record.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'CustomerName' => 'required|string|max:255',
+            'CustomerName'        => 'required|string|max:255',
             'CustomerPhoneNumber' => 'required|string|max:20',
-            'CustomerAddress' => 'nullable|string',
-            'CustomerEmail' => 'nullable|email',
-            'reason_id' => 'nullable|integer',
-            'product' => 'nullable|string|max:255',
-            'CustomerCompany' => 'nullable|string|max:255',
-            'status' => 'required|in:pending,complete,close,fail',
+            'CustomerAddress'     => 'nullable|string',
+            'CustomerEmail'       => 'nullable|email',
+            'CustomerCompany'     => 'nullable|string|max:255',
+            'district'            => 'nullable|integer',
+
+
+            'reason'          => 'nullable|integer',
+
+            'product'         => 'nullable|integer',
+            'productModel'   => 'nullable|integer',
+
+            'productPrice'      => 'nullable|numeric',
+            'discountPrice'     => 'nullable|numeric',
+
+            'callback_date'      => 'nullable|date',
+
+            'status'             => 'required|in:pending,complete,close,fail',
         ]);
 
         $user = Auth::user();
 
         CallRecorde::create([
-            'CustomerName' => $request->CustomerName,
+            'CustomerName'        => $request->CustomerName,
             'CustomerPhoneNumber' => $request->CustomerPhoneNumber,
-            'CustomerAddress' => $request->CustomerAddress,
-            'CustomerEmail' => $request->CustomerEmail,
-            'reason_id' => $request->reason_id,
-            'product' => $request->product,
-            'CustomerCompany' => $request->CustomerCompany,
-            'status' => $request->status,
+            'CustomerAddress'     => $request->CustomerAddress,
+            'CustomerEmail'       => $request->CustomerEmail,
+            'CustomerCompany'     => $request->CustomerCompany,
+            'district'            => $request->district,
 
-            'CompanyId' => $user->companyid,
-            'CreatedBy' => $user->id,
+            'reason'          => $request->reason,
+
+            'product'         => $request->product,
+            'productModel'   => $request->productModel,
+
+            'productPrice'      => $request->productPrice,
+            'discountPrice'     => $request->discountPrice,
+
+            'callback_date'      => $request->callback_date,
+
+            'status'             => $request->status,
+
+            'CompanyId'          => $user->companyid,
+            'CreatedBy'          => $user->id,
         ]);
 
         return redirect()
             ->route('call-records.index')
-            ->with('success', 'Call record created successfully');
+            ->with('success', 'Call Record Created Successfully');
     }
-
     /**
      * Display the specified resource.
      */
