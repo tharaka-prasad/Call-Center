@@ -65,7 +65,7 @@ class CallRecorde extends Model
     // PRODUCT MODEL
     public function productModel()
     {
-        return $this->belongsTo(ProductModel::class, 'productModel');
+        return $this->belongsTo(ProductModel::class, 'productModel', 'id');
     }
 
     // REASON

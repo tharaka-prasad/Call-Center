@@ -16,13 +16,12 @@ public function index(Request $request)
 {
     $user = Auth::user();
 
-    $query = CallRecorde::with([
-        'creator:id,firstName,lastName',
-        'reasonData:id,reason',
-        'districtData:id,districtName',
-        'productData:id,productName',
-        'productModelData:id,productModel',
-    ])
+    $query= CallRecorde::with([
+            'product',
+            'productModel',
+            'reason',
+            'creator',
+        ])
     ->where('CompanyId', $user->companyid);
 
     // Super Admin & Company Admin
@@ -59,7 +58,7 @@ public function index(Request $request)
     }
 
     $calls = $query->latest()->get();
-    
+
     return Inertia::render('CallReports/Index', [
         'calls' => $calls,
         'filters' => $request->all(),

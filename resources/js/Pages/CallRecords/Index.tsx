@@ -208,7 +208,7 @@ export default function Index({ calls = [] }: any) {
                                                     </td>
 
                                                     <td className="px-5 py-3.5 text-sm text-gray-500">
-                                                        {call.productModel?.modelName || '-'}
+                                                        {call.productModel?.productModel || '-'}
                                                     </td>
 
                                                     <td className="px-5 py-3.5 text-sm text-gray-500">
@@ -246,7 +246,7 @@ export default function Index({ calls = [] }: any) {
                                                         </span>
                                                     </td>
                                                     <td className="px-5 py-3.5 text-sm text-gray-500">
-                                                        {call.creator?.name || '-'}
+                                                        {call.creator?.firstName  || '-'} {call.creator?.lastName  || '-'}
                                                     </td>
                                                     <td className="px-5 py-3.5">
                                                         <div className="flex justify-center gap-2">
