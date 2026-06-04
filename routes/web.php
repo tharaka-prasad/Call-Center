@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CallRecordeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,6 +33,10 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/call-records-store', [CallRecordeController::class, 'store'])
         ->name('call-records.store');
+
+    Route::get('/call-records-Report', [ReportController::class, 'index'])
+        ->name('report.index');
+
 });
 
 require __DIR__ . '/auth.php';

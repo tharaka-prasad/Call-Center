@@ -1,77 +1,82 @@
 <?php
-
 namespace App\Models;
 
-use Faker\Provider\Company;
+use App\Models\Campany;
+use App\Models\District;
+use App\Models\Product;
+use App\Models\ProductModel;
+use App\Models\Reason;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CallRecorde extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'CustomerName',
-        'CustomerPhoneNumber',
-        'CustomerAddress',
-        'CustomerEmail',
-        'CustomerCompany',
+        'customerName',
+        'customerPhoneNumber',
+        'customerAddress',
+        'customerEmail',
+        'customerCompany',
         'product',
+        'productModel',
+        'productPrice',
+        'discountPrice',
+        'district',
         'reason',
         'status',
         'fail_reason',
         'callback_days',
-        'CreatedBy',
+        'createdBy',
         'callback_date',
         'callback_note',
         'callback_time',
-        'CompanyId',
+        'companyId',
         'is_callback_done',
         'callback_description',
     ];
 
-    /*
-    |-----------------------------------
-    | Casts
-    |-----------------------------------
-    */
     protected $casts = [
         'callback_date' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'created_at'    => 'datetime',
+        'updated_at'    => 'datetime',
     ];
 
-    /*
-    |-----------------------------------
-    | Relationships
-    |-----------------------------------
-    */
-
-    // Creator (User)
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'CreatedBy');
-    }
-
+    // COMPANY
     public function company()
     {
-        return $this->belongsTo(Company::class, 'CompanyId');
+        return $this->belongsTo(Campany::class, 'companyId');
     }
 
-    /*
-    |-----------------------------------
-    | Helpers
-    |-----------------------------------
-    */
-
-    // Full customer display name
-    public function getCustomerInfoAttribute()
+    // USER
+    public function creator()
     {
-        return $this->CustomerName . ' - ' . $this->CustomerPhoneNumber;
+        return $this->belongsTo(User::class, 'createdBy');
     }
 
-    // Check if callback is due
-    public function getIsDueAttribute()
+    // ✅ PRODUCT (FIXED NAME)
+    public function product()
     {
-        return $this->callback_date && now()->greaterThanOrEqualTo($this->callback_date);
+        return $this->belongsTo(Product::class, 'product');
+    }
+
+    // PRODUCT MODEL
+    public function productModel()
+    {
+        return $this->belongsTo(ProductModel::class, 'productModel');
+    }
+
+    // REASON
+    public function reason()
+    {
+        return $this->belongsTo(Reason::class, 'reason');
+    }
+
+    // DISTRICT
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district');
     }
 }

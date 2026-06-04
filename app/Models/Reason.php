@@ -10,6 +10,6 @@ class Reason extends Model
     use HasFactory;
 
      protected $fillable = [
-        'reasonName',
+        'reason',
     ];
 }

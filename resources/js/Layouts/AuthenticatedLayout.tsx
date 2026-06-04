@@ -39,6 +39,12 @@ export default function Authenticated({
                                 >
                                     Call Record
                                 </NavLink>
+                                 <NavLink
+                                    href={route('report.index')}
+                                    active={route().current('report.index')}
+                                >
+                                    Report
+                                </NavLink>
                             </div>
                         </div>
 

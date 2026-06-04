@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\CallRecorde;
@@ -19,32 +18,37 @@ class CallRecordeController extends Controller
     {
         $user = Auth::user();
 
-        $calls = CallRecorde::where('CompanyId', $user->companyid)
+        $calls = CallRecorde::with([
+            'product',
+            'productModel',
+            'reason',
+            'creator',
+        ])
+            ->where('companyId', $user->companyid)
             ->latest()
             ->get();
-
+    
         return Inertia::render('CallRecords/Index', [
-            'calls' => $calls
+            'calls' => $calls,
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-   public function create()
-{
-    $reasons = Reason::all();
+    public function create()
+    {
+        $reasons = Reason::all();
 
-    $products = Product::with('models')->get();
-    $districts = District::all(); // ✅ NEW
+        $products  = Product::with('models')->get();
+        $districts = District::all(); // ✅ NEW
 
-
-    return Inertia::render('CallRecords/Create', [
-        'reasons' => $reasons,
-        'products' => $products,
-        'districts' => $districts,
-    ]);
-}
+        return Inertia::render('CallRecords/Create', [
+            'reasons'   => $reasons,
+            'products'  => $products,
+            'districts' => $districts,
+        ]);
+    }
 
     /**
      * Store new call record.
@@ -52,51 +56,50 @@ class CallRecordeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'CustomerName'        => 'required|string|max:255',
-            'CustomerPhoneNumber' => 'required|string|max:20',
-            'CustomerAddress'     => 'nullable|string',
-            'CustomerEmail'       => 'nullable|email',
-            'CustomerCompany'     => 'nullable|string|max:255',
+            'customerName'        => 'required|string|max:255',
+            'customerPhoneNumber' => 'required|string|max:20',
+            'customerAddress'     => 'nullable|string',
+            'customerEmail'       => 'nullable|email',
+            'customerCompany'     => 'nullable|string|max:255',
             'district'            => 'nullable|integer',
 
+            'reason'              => 'nullable|integer',
 
-            'reason'          => 'nullable|integer',
+            'product'             => 'nullable|integer',
+            'productModel'        => 'nullable|integer',
 
-            'product'         => 'nullable|integer',
-            'productModel'   => 'nullable|integer',
+            'productPrice'        => 'nullable|numeric',
+            'discountPrice'       => 'nullable|numeric',
 
-            'productPrice'      => 'nullable|numeric',
-            'discountPrice'     => 'nullable|numeric',
+            'callback_date'       => 'nullable|date',
 
-            'callback_date'      => 'nullable|date',
-
-            'status'             => 'required|in:pending,complete,close,fail',
+            'status'              => 'required|in:pending,complete,close,fail',
         ]);
 
         $user = Auth::user();
 
         CallRecorde::create([
-            'CustomerName'        => $request->CustomerName,
-            'CustomerPhoneNumber' => $request->CustomerPhoneNumber,
-            'CustomerAddress'     => $request->CustomerAddress,
-            'CustomerEmail'       => $request->CustomerEmail,
-            'CustomerCompany'     => $request->CustomerCompany,
+            'customerName'        => $request->customerName,
+            'customerPhoneNumber' => $request->customerPhoneNumber,
+            'customerAddress'     => $request->customerAddress,
+            'customerEmail'       => $request->customerEmail,
+            'customerCompany'     => $request->customerCompany,
             'district'            => $request->district,
 
-            'reason'          => $request->reason,
+            'reason'              => $request->reason,
 
-            'product'         => $request->product,
-            'productModel'   => $request->productModel,
+            'product'             => $request->product,
+            'productModel'        => $request->productModel,
 
-            'productPrice'      => $request->productPrice,
-            'discountPrice'     => $request->discountPrice,
+            'productPrice'        => $request->productPrice,
+            'discountPrice'       => $request->discountPrice,
 
-            'callback_date'      => $request->callback_date,
+            'callback_date'       => $request->callback_date,
 
-            'status'             => $request->status,
+            'status'              => $request->status,
 
-            'CompanyId'          => $user->companyid,
-            'CreatedBy'          => $user->id,
+            'companyId'           => $user->companyid,
+            'createdBy'           => $user->id,
         ]);
 
         return redirect()

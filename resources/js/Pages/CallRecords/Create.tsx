@@ -10,7 +10,7 @@ interface Props {
 const inputClass =
     'w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-150';
 
-const labelClass = 'block text-xs font-medium text-gray-500 mb-1.5';
+const labelClass = 'block text-xs font-semibold text-gray-800 mb-1.5';
 
 const sectionClass = 'bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden';
 
@@ -72,27 +72,27 @@ export default function Create({
     districts = [],
 }: Props) {
     const { data, setData, post, processing, errors } = useForm({
-        CustomerName: '',
-        CustomerPhoneNumber: '',
-        CustomerAddress: '',
-        CustomerEmail: '',
-        CustomerCompany: '',
+        customerName: '',
+        customerPhoneNumber: '',
+        customerAddress: '',
+        customerEmail: '',
+        customerCompany: '',
 
-        districtId: '',
+        district: '',       // ✅ matches backend: 'district'
         reason: '',
 
-        productId: '',
-        productModel: '',
+        product: '',        // ✅ matches backend: 'product'
+        productModel: '',   // ✅ matches backend: 'productModel'
 
-        productPrice: '',
-        discountPrice: '',
+        productPrice: '',   // ✅ matches backend: 'productPrice'
+        discountPrice: '',  // ✅ matches backend: 'discountPrice'
 
         callback_date: '',
 
         status: 'pending',
     });
 
-    const selectedProduct = products.find((p: any) => p.id == data.productId);
+    const selectedProduct = products.find((p: any) => p.id == data.product);
 
     return (
         <AuthenticatedLayout
@@ -145,11 +145,11 @@ export default function Create({
                                 <input
                                     className={inputClass}
                                     placeholder="e.g. Nuwan Perera"
-                                    value={data.CustomerName}
-                                    onChange={(e) => setData('CustomerName', e.target.value)}
+                                    value={data.customerName}
+                                    onChange={(e) => setData('customerName', e.target.value)}
                                 />
-                                {errors.CustomerName && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerName}</p>
+                                {errors.customerName && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.customerName}</p>
                                 )}
                             </div>
 
@@ -158,11 +158,11 @@ export default function Create({
                                 <input
                                     className={inputClass}
                                     placeholder="e.g. 077 123 4567"
-                                    value={data.CustomerPhoneNumber}
-                                    onChange={(e) => setData('CustomerPhoneNumber', e.target.value)}
+                                    value={data.customerPhoneNumber}
+                                    onChange={(e) => setData('customerPhoneNumber', e.target.value)}
                                 />
-                                {errors.CustomerPhoneNumber && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerPhoneNumber}</p>
+                                {errors.customerPhoneNumber && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.customerPhoneNumber}</p>
                                 )}
                             </div>
 
@@ -172,11 +172,11 @@ export default function Create({
                                     type="email"
                                     className={inputClass}
                                     placeholder="nuwan@example.com"
-                                    value={data.CustomerEmail}
-                                    onChange={(e) => setData('CustomerEmail', e.target.value)}
+                                    value={data.customerEmail}
+                                    onChange={(e) => setData('customerEmail', e.target.value)}
                                 />
-                                {errors.CustomerEmail && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerEmail}</p>
+                                {errors.customerEmail && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.customerEmail}</p>
                                 )}
                             </div>
 
@@ -185,11 +185,11 @@ export default function Create({
                                 <input
                                     className={inputClass}
                                     placeholder="Company name"
-                                    value={data.CustomerCompany}
-                                    onChange={(e) => setData('CustomerCompany', e.target.value)}
+                                    value={data.customerCompany}
+                                    onChange={(e) => setData('customerCompany', e.target.value)}
                                 />
-                                {errors.CustomerCompany && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerCompany}</p>
+                                {errors.customerCompany && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.customerCompany}</p>
                                 )}
                             </div>
 
@@ -198,11 +198,11 @@ export default function Create({
                                 <textarea
                                     className={inputClass + ' resize-none h-20'}
                                     placeholder="Street, city..."
-                                    value={data.CustomerAddress}
-                                    onChange={(e) => setData('CustomerAddress', e.target.value)}
+                                    value={data.customerAddress}
+                                    onChange={(e) => setData('customerAddress', e.target.value)}
                                 />
-                                {errors.CustomerAddress && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.CustomerAddress}</p>
+                                {errors.customerAddress && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.customerAddress}</p>
                                 )}
                             </div>
 
@@ -210,8 +210,8 @@ export default function Create({
                                 <label className={labelClass}>District</label>
                                 <select
                                     className={inputClass}
-                                    value={data.districtId}
-                                    onChange={(e) => setData('districtId', e.target.value)}
+                                    value={data.district}
+                                    onChange={(e) => setData('district', e.target.value)}
                                 >
                                     <option value="">Select district</option>
                                     {districts.map((d: any) => (
@@ -220,8 +220,8 @@ export default function Create({
                                         </option>
                                     ))}
                                 </select>
-                                {errors.districtId && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.districtId}</p>
+                                {errors.district && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.district}</p>
                                 )}
                             </div>
                         </div>
@@ -240,9 +240,9 @@ export default function Create({
                                 <label className={labelClass}>Product</label>
                                 <select
                                     className={inputClass}
-                                    value={data.productId}
+                                    value={data.product}
                                     onChange={(e) => {
-                                        setData('productId', e.target.value);
+                                        setData('product', e.target.value);
                                         setData('productModel', '');
                                         setData('productPrice', '');
                                     }}
@@ -254,8 +254,8 @@ export default function Create({
                                         </option>
                                     ))}
                                 </select>
-                                {errors.productId && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.productId}</p>
+                                {errors.product && (
+                                    <p className="mt-1 text-xs text-red-500">{errors.product}</p>
                                 )}
                             </div>
 

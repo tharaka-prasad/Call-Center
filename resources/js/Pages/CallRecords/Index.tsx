@@ -137,12 +137,46 @@ export default function Index({ calls = [] }: any) {
                             <table className="w-full">
                                 <thead>
                                     <tr className="bg-gray-50/80">
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Customer</th>
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Phone</th>
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Company</th>
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
-                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                                        <th className="px-5 py-3 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">Actions</th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Customer
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Phone
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Address
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Product
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Model
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Price
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Discount Price
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Next Call Date
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Closing Date
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Remark
+                                        </th>
+                                        <th className="px-5 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th className="px-5 py-3 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            created By User
+                                        </th>
+                                        <th className="px-5 py-3 text-center text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-50">
@@ -155,20 +189,64 @@ export default function Index({ calls = [] }: any) {
                                                         <div className="flex items-center gap-2.5">
                                                             <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
                                                                 <span className="text-xs font-semibold text-blue-600">
-                                                                    {call.CustomerName?.charAt(0)?.toUpperCase() ?? '?'}
+                                                                    {call.customerName?.charAt(0)?.toUpperCase() ?? '?'}
                                                                 </span>
                                                             </div>
-                                                            <span className="text-sm font-medium text-gray-800">{call.CustomerName}</span>
+                                                            <span className="text-sm font-medium text-gray-800">{call.customerName}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-sm text-gray-500">{call.CustomerPhoneNumber}</td>
-                                                    <td className="px-5 py-3.5 text-sm text-gray-500">{call.CustomerCompany || '—'}</td>
-                                                    <td className="px-5 py-3.5 text-sm text-gray-500">{call.product || '—'}</td>
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.customerPhoneNumber}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.customerAddress || '-'}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.product?.productName || '-'}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.productModel?.modelName || '-'}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        Rs. {Number(call.productPrice ?? 0).toLocaleString()}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        Rs. {Number(call.discountPrice ?? 0).toLocaleString()}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.callback_date
+                                                            ? new Date(call.callback_date).toLocaleDateString()
+                                                            : '-'}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.closing_date
+                                                            ? new Date(call.closing_date).toLocaleDateString()
+                                                            : '-'}
+                                                    </td>
+
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.reason?.reason || '-'}
+                                                    </td>
+
                                                     <td className="px-5 py-3.5">
-                                                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${status.bg}`}>
-                                                            <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                                                        <span
+                                                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${status.bg}`}
+                                                        >
+                                                            <span
+                                                                className={`w-1.5 h-1.5 rounded-full ${status.dot}`}
+                                                            />
                                                             {status.label}
                                                         </span>
+                                                    </td>
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">
+                                                        {call.creator?.name || '-'}
                                                     </td>
                                                     <td className="px-5 py-3.5">
                                                         <div className="flex justify-center gap-2">
