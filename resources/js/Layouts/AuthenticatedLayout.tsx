@@ -179,10 +179,10 @@ export default function Authenticated({
                             Report
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href={route('call-records.index')}
-                            active={route().current('call-records.index')}
+                            href={route('company.index')}
+                            active={route().current('company.index')}
                         >
-                            Call Record
+                            Campany Settings
                         </ResponsiveNavLink>
                     </div>
 

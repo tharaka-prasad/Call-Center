@@ -42,7 +42,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/company-settings', [CompanyDeatailsController::class, 'index'])
-        ->name('report.index');
+        ->name('company.index');
 
 });
 
