@@ -72,6 +72,12 @@ export default function Authenticated({
                                 >
                                     Report
                                 </NavLink>
+                                <NavLink
+                                    href={route('report.index')}
+                                    active={route().current('report.index')}
+                                >
+                                    Company Settings
+                                </NavLink>
                             </div>
                         </div>
 
@@ -171,6 +177,12 @@ export default function Authenticated({
                             active={route().current('report.index')}
                         >
                             Report
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('call-records.index')}
+                            active={route().current('call-records.index')}
+                        >
+                            Call Record
                         </ResponsiveNavLink>
                     </div>
 
