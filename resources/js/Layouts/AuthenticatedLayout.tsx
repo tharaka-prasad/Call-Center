@@ -1,4 +1,3 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
@@ -21,8 +20,36 @@ export default function Authenticated({
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                                <Link href="/" className="flex items-center gap-2">
+                                    {/* Call Center Logo */}
+                                    <div style={{
+                                        width: 36,
+                                        height: 36,
+                                        background: '#2563eb',
+                                        borderRadius: 8,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexShrink: 0,
+                                    }}>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="20"
+                                            height="20"
+                                            viewBox="0 0 24 24"
+                                            fill="white"
+                                        >
+                                            <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.47 11.47 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.58a1 1 0 01-.25 1.01l-2.2 2.2z"/>
+                                        </svg>
+                                    </div>
+                                    <span style={{
+                                        fontWeight: 700,
+                                        fontSize: '1rem',
+                                        color: '#111827',
+                                        letterSpacing: '-0.01em',
+                                    }}>
+                                        CallCenter
+                                    </span>
                                 </Link>
                             </div>
 
@@ -39,11 +66,17 @@ export default function Authenticated({
                                 >
                                     Call Record
                                 </NavLink>
-                                 <NavLink
+                                <NavLink
                                     href={route('report.index')}
                                     active={route().current('report.index')}
                                 >
                                     Report
+                                </NavLink>
+                                <NavLink
+                                    href={route('report.index')}
+                                    active={route().current('report.index')}
+                                >
+                                    Company Settings
                                 </NavLink>
                             </div>
                         </div>
@@ -58,7 +91,6 @@ export default function Authenticated({
                                                 className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
                                             >
                                                 {user.name}
-
                                                 <svg
                                                     className="-me-0.5 ms-2 h-4 w-4"
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -76,9 +108,7 @@ export default function Authenticated({
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                        >
+                                        <Dropdown.Link href={route('profile.edit')}>
                                             Profile
                                         </Dropdown.Link>
                                         <Dropdown.Link
@@ -109,22 +139,14 @@ export default function Authenticated({
                                     viewBox="0 0 24 24"
                                 >
                                     <path
-                                        className={
-                                            !showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
+                                        className={!showingNavigationDropdown ? 'inline-flex' : 'hidden'}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
                                         d="M4 6h16M4 12h16M4 18h16"
                                     />
                                     <path
-                                        className={
-                                            showingNavigationDropdown
-                                                ? 'inline-flex'
-                                                : 'hidden'
-                                        }
+                                        className={showingNavigationDropdown ? 'inline-flex' : 'hidden'}
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
                                         strokeWidth="2"
@@ -136,18 +158,31 @@ export default function Authenticated({
                     </div>
                 </div>
 
-                <div
-                    className={
-                        (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
-                    }
-                >
+                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
                             href={route('dashboard')}
                             active={route().current('dashboard')}
                         >
                             Dashboard
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('call-records.index')}
+                            active={route().current('call-records.index')}
+                        >
+                            Call Record
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('report.index')}
+                            active={route().current('report.index')}
+                        >
+                            Report
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('call-records.index')}
+                            active={route().current('call-records.index')}
+                        >
+                            Call Record
                         </ResponsiveNavLink>
                     </div>
 
