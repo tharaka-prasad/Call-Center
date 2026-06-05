@@ -117,19 +117,76 @@ class CallRecordeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $user = Auth::user();
+
+        $call = CallRecorde::where('id', $id)
+            ->where('companyId', $user->companyid)
+            ->firstOrFail();
+
+        $products  = Product::with('models')->get();
+        $reasons   = Reason::all();
+        $districts = District::all();
+
+        return Inertia::render('CallRecords/Edit', [
+            'call'      => $call,
+            'products'  => $products,
+            'reasons'   => $reasons,
+            'districts' => $districts,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
-    }
+        $user = Auth::user();
 
+        $call = CallRecorde::where('id', $id)
+            ->where('companyId', $user->companyid)
+            ->firstOrFail();
+
+        $request->validate([
+            'customerName'        => 'required|string|max:255',
+            'customerPhoneNumber' => 'required|string|max:20',
+            'customerAddress'     => 'nullable|string',
+            'customerEmail'       => 'nullable|email',
+            'customerCompany'     => 'nullable|string|max:255',
+            'district'            => 'nullable|integer',
+            'reason'              => 'nullable|integer',
+            'product'             => 'nullable|integer',
+            'productModel'        => 'nullable|integer',
+            'productPrice'        => 'nullable|numeric',
+            'discountPrice'       => 'nullable|numeric',
+            'callback_date'       => 'nullable|date',
+            'status'              => 'required|in:pending,complete,close,fail',
+            'fail_reason'         => 'nullable|required_if:status,fail|string',
+            'is_callback_done'    => 'nullable|in:yes,no',
+            'callback_note'       => 'nullable|string',
+        ]);
+
+        $call->update([
+            'customerName'        => $request->customerName,
+            'customerPhoneNumber' => $request->customerPhoneNumber,
+            'customerAddress'     => $request->customerAddress,
+            'customerEmail'       => $request->customerEmail,
+            'customerCompany'     => $request->customerCompany,
+            'district'            => $request->district,
+            'reason'              => $request->reason,
+            'product'             => $request->product,
+            'productModel'        => $request->productModel,
+            'productPrice'        => $request->productPrice,
+            'discountPrice'       => $request->discountPrice,
+            'callback_date'       => $request->callback_date,
+            'status'              => $request->status,
+            'fail_reason'         => $request->status === 'fail' ? $request->fail_reason : null,
+            'is_callback_done'    => $request->is_callback_done,
+            'callback_note'       => $request->is_callback_done === 'yes' ? $request->callback_note : null,
+        ]);
+
+        return redirect()
+            ->route('call-records.index')
+            ->with('success', 'Call Record Updated Successfully');
+    }
     /**
      * Remove the specified resource from storage.
      */

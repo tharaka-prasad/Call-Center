@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\CallRecorde;
@@ -12,22 +13,21 @@ use Inertia\Inertia;
 
 class ReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $user = Auth::user();
 
-        $query = CallRecorde::query()
-            ->with([
-                'product',
-                'productModel',
-                'reason',
-                'creator',
-                'district',
-            ])
-            ->where('companyId', $user->companyid);
+        $query = CallRecorde::with([
+            'product',
+            'productModel',
+            'reason',
+            'creator',
+            'district'
+        ])->where('companyId', $user->companyid);
+
+        if (!in_array($user->role, ['superadmin', 'companyadmin'])) {
+            $query->where('createdBy', $user->id);
+        }
 
         if ($request->filled('from_date')) {
             $query->whereDate('created_at', '>=', $request->from_date);
@@ -56,69 +56,21 @@ class ReportController extends Controller
         $calls = $query->latest()->get();
 
         return Inertia::render('CallReports/Index', [
-            'calls'     => $calls,
+            'calls' => $calls,
 
-            'filters'   => $request->only([
-                'from_date',
-                'to_date',
-                'district',
-                'product',
-                'model',
-                'reason',
-            ]),
+            'filters' => [
+                'from_date' => $request->from_date,
+                'to_date'   => $request->to_date,
+                'district'  => $request->district,
+                'product'   => $request->product,
+                'model'     => $request->model,
+                'reason'    => $request->reason,
+            ],
 
             'districts' => District::all(),
             'reasons'   => Reason::all(),
             'products'  => Product::all(),
-            'models'    => ProductModel::all(), // IMPORTANT
-
+            'models'    => ProductModel::all(),
         ]);
-    }
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }
