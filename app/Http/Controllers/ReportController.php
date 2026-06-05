@@ -1,8 +1,11 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\CallRecorde;
+use App\Models\District;
+use App\Models\Product;
+use App\Models\ProductModel;
+use App\Models\Reason;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -12,58 +15,65 @@ class ReportController extends Controller
     /**
      * Display a listing of the resource.
      */
-public function index(Request $request)
-{
-    $user = Auth::user();
+    public function index(Request $request)
+    {
+        $user = Auth::user();
 
-    $query= CallRecorde::with([
-            'product',
-            'productModel',
-            'reason',
-            'creator',
-        ])
-    ->where('CompanyId', $user->companyid);
+        $query = CallRecorde::query()
+            ->with([
+                'product',
+                'productModel',
+                'reason',
+                'creator',
+                'district',
+            ])
+            ->where('companyId', $user->companyid);
 
-    // Super Admin & Company Admin
-    if (!in_array($user->role, ['superadmin', 'companyadmin'])) {
-        $query->where('CreatedBy', $user->id);
-    }
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
 
-    // Date Filter
-    if ($request->filled('from_date') && $request->filled('to_date')) {
-        $query->whereBetween('created_at', [
-            $request->from_date . ' 00:00:00',
-            $request->to_date . ' 23:59:59'
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        if ($request->filled('district')) {
+            $query->where('district', $request->district);
+        }
+
+        if ($request->filled('product')) {
+            $query->where('product', $request->product);
+        }
+
+        if ($request->filled('model')) {
+            $query->where('productModel', $request->model);
+        }
+
+        if ($request->filled('reason')) {
+            $query->where('reason', $request->reason);
+        }
+
+        $calls = $query->latest()->get();
+
+        return Inertia::render('CallReports/Index', [
+            'calls'     => $calls,
+
+            'filters'   => $request->only([
+                'from_date',
+                'to_date',
+                'district',
+                'product',
+                'model',
+                'reason',
+            ]),
+
+            'districts' => District::all(),
+            'reasons'   => Reason::all(),
+            'products'  => Product::all(),
+            'models'    => ProductModel::all(), // IMPORTANT
+
         ]);
     }
-
-    // District Filter
-    if ($request->filled('district')) {
-        $query->where('district', $request->district);
-    }
-
-    // Product Filter
-    if ($request->filled('product')) {
-        $query->where('product', $request->product);
-    }
-
-    // Model Filter
-    if ($request->filled('model')) {
-        $query->where('productModel', $request->model);
-    }
-
-    // Reason Filter
-    if ($request->filled('reason')) {
-        $query->where('reason', $request->reason);
-    }
-
-    $calls = $query->latest()->get();
-
-    return Inertia::render('CallReports/Index', [
-        'calls' => $calls,
-        'filters' => $request->all(),
-    ]);
-}
     /**
      * Show the form for creating a new resource.
      */

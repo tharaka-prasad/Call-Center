@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CallRecordeController;
+use App\Http\Controllers\CompanyDeatailsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
@@ -35,6 +36,12 @@ Route::middleware('auth')->group(function () {
         ->name('call-records.store');
 
     Route::get('/call-records-Report', [ReportController::class, 'index'])
+        ->name('report.index');
+
+
+
+
+    Route::get('/company-settings', [CompanyDeatailsController::class, 'index'])
         ->name('report.index');
 
 });

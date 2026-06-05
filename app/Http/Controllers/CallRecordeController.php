@@ -27,7 +27,7 @@ class CallRecordeController extends Controller
             ->where('companyId', $user->companyid)
             ->latest()
             ->get();
-    
+
         return Inertia::render('CallRecords/Index', [
             'calls' => $calls,
         ]);
