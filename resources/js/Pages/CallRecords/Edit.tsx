@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useForm, Link } from '@inertiajs/react';
 
 interface Props {
+    call: any;
     reasons: any[];
     products: any[];
     districts: any[];
@@ -66,30 +67,33 @@ const STATUS_OPTIONS = [
     },
 ];
 
-export default function Create({
-    reasons = [],
-    products = [],
-    districts = [],
-}: Props) {
-    const { data, setData, post, processing, errors } = useForm({
-        customerName: '',
-        customerPhoneNumber: '',
-        customerAddress: '',
-        customerEmail: '',
-        customerCompany: '',
+export default function Edit({ call, reasons = [], products = [], districts = [] }: Props) {
+    const { data, setData, put, processing, errors } = useForm({
+        customerName:         call.customerName         ?? '',
+        customerPhoneNumber:  call.customerPhoneNumber  ?? '',
+        customerAddress:      call.customerAddress      ?? '',
+        customerEmail:        call.customerEmail        ?? '',
+        customerCompany:      call.customerCompany      ?? '',
 
-        district: '',       // ✅ matches backend: 'district'
-        reason: '',
+        district:             call.district             ?? '',
+        reason:               call.reason               ?? '',
 
-        product: '',        // ✅ matches backend: 'product'
-        productModel: '',   // ✅ matches backend: 'productModel'
+        product:              call.product              ?? '',
+        productModel:         call.productModel         ?? '',
 
-        productPrice: '',   // ✅ matches backend: 'productPrice'
-        discountPrice: '',  // ✅ matches backend: 'discountPrice'
+        productPrice:         call.productPrice         ?? '',
+        discountPrice:        call.discountPrice        ?? '',
 
-        callback_date: '',
+        callback_date:        call.callback_date
+                                ? new Date(call.callback_date).toISOString().split('T')[0]
+                                : '',
 
-        status: 'pending',
+        status:               call.status               ?? 'pending',
+
+        // ✅ NEW FIELDS
+        fail_reason:          call.fail_reason          ?? '',
+        is_callback_done:     call.is_callback_done     ?? '',   // 'yes' | 'no' | ''
+        callback_note:        call.callback_note        ?? '',
     });
 
     const selectedProduct = products.find((p: any) => p.id == data.product);
@@ -99,16 +103,14 @@ export default function Create({
             header={
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        <div className="w-9 h-9 rounded-xl bg-gray-900 flex items-center justify-center shadow-sm">
+                            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-base font-semibold text-gray-800 leading-tight">
-                                Create Call Record
-                            </h2>
-                            <p className="text-xs text-gray-400">Log a new customer call</p>
+                            <h2 className="text-base font-bold text-gray-900 leading-tight">Edit Call Record</h2>
+                            <p className="text-xs text-gray-400">Update call details for {call.customerName}</p>
                         </div>
                     </div>
                     <Link
@@ -127,7 +129,7 @@ export default function Create({
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        post(route('call-records.store'));
+                        put(route('call-records.update', call.id));
                     }}
                     className="space-y-4"
                 >
@@ -148,9 +150,7 @@ export default function Create({
                                     value={data.customerName}
                                     onChange={(e) => setData('customerName', e.target.value)}
                                 />
-                                {errors.customerName && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.customerName}</p>
-                                )}
+                                {errors.customerName && <p className="mt-1 text-xs text-red-500">{errors.customerName}</p>}
                             </div>
 
                             <div>
@@ -161,9 +161,7 @@ export default function Create({
                                     value={data.customerPhoneNumber}
                                     onChange={(e) => setData('customerPhoneNumber', e.target.value)}
                                 />
-                                {errors.customerPhoneNumber && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.customerPhoneNumber}</p>
-                                )}
+                                {errors.customerPhoneNumber && <p className="mt-1 text-xs text-red-500">{errors.customerPhoneNumber}</p>}
                             </div>
 
                             <div>
@@ -175,9 +173,7 @@ export default function Create({
                                     value={data.customerEmail}
                                     onChange={(e) => setData('customerEmail', e.target.value)}
                                 />
-                                {errors.customerEmail && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.customerEmail}</p>
-                                )}
+                                {errors.customerEmail && <p className="mt-1 text-xs text-red-500">{errors.customerEmail}</p>}
                             </div>
 
                             <div>
@@ -188,9 +184,7 @@ export default function Create({
                                     value={data.customerCompany}
                                     onChange={(e) => setData('customerCompany', e.target.value)}
                                 />
-                                {errors.customerCompany && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.customerCompany}</p>
-                                )}
+                                {errors.customerCompany && <p className="mt-1 text-xs text-red-500">{errors.customerCompany}</p>}
                             </div>
 
                             <div>
@@ -201,9 +195,7 @@ export default function Create({
                                     value={data.customerAddress}
                                     onChange={(e) => setData('customerAddress', e.target.value)}
                                 />
-                                {errors.customerAddress && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.customerAddress}</p>
-                                )}
+                                {errors.customerAddress && <p className="mt-1 text-xs text-red-500">{errors.customerAddress}</p>}
                             </div>
 
                             <div>
@@ -215,14 +207,10 @@ export default function Create({
                                 >
                                     <option value="">Select district</option>
                                     {districts.map((d: any) => (
-                                        <option key={d.id} value={d.id}>
-                                            {d.districtName}
-                                        </option>
+                                        <option key={d.id} value={d.id}>{d.districtName}</option>
                                     ))}
                                 </select>
-                                {errors.district && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.district}</p>
-                                )}
+                                {errors.district && <p className="mt-1 text-xs text-red-500">{errors.district}</p>}
                             </div>
                         </div>
                     </div>
@@ -249,14 +237,10 @@ export default function Create({
                                 >
                                     <option value="">Select product</option>
                                     {products.map((p: any) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.productName}
-                                        </option>
+                                        <option key={p.id} value={p.id}>{p.productName}</option>
                                     ))}
                                 </select>
-                                {errors.product && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.product}</p>
-                                )}
+                                {errors.product && <p className="mt-1 text-xs text-red-500">{errors.product}</p>}
                             </div>
 
                             <div>
@@ -275,14 +259,10 @@ export default function Create({
                                 >
                                     <option value="">Select model</option>
                                     {selectedProduct?.models?.map((m: any) => (
-                                        <option key={m.id} value={m.id}>
-                                            {m.productModel}
-                                        </option>
+                                        <option key={m.id} value={m.id}>{m.productModel}</option>
                                     ))}
                                 </select>
-                                {errors.productModel && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.productModel}</p>
-                                )}
+                                {errors.productModel && <p className="mt-1 text-xs text-red-500">{errors.productModel}</p>}
                             </div>
 
                             <div>
@@ -306,9 +286,7 @@ export default function Create({
                                     value={data.discountPrice}
                                     onChange={(e) => setData('discountPrice', e.target.value)}
                                 />
-                                {errors.discountPrice && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.discountPrice}</p>
-                                )}
+                                {errors.discountPrice && <p className="mt-1 text-xs text-red-500">{errors.discountPrice}</p>}
                             </div>
                         </div>
                     </div>
@@ -331,14 +309,10 @@ export default function Create({
                                 >
                                     <option value="">Select reason</option>
                                     {reasons.map((r: any) => (
-                                        <option key={r.id} value={r.id}>
-                                            {r.reason}
-                                        </option>
+                                        <option key={r.id} value={r.id}>{r.reason}</option>
                                     ))}
                                 </select>
-                                {errors.reason && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.reason}</p>
-                                )}
+                                {errors.reason && <p className="mt-1 text-xs text-red-500">{errors.reason}</p>}
                             </div>
 
                             <div>
@@ -349,9 +323,7 @@ export default function Create({
                                     value={data.callback_date}
                                     onChange={(e) => setData('callback_date', e.target.value)}
                                 />
-                                {errors.callback_date && (
-                                    <p className="mt-1 text-xs text-red-500">{errors.callback_date}</p>
-                                )}
+                                {errors.callback_date && <p className="mt-1 text-xs text-red-500">{errors.callback_date}</p>}
                             </div>
                         </div>
                     </div>
@@ -364,21 +336,107 @@ export default function Create({
                             </svg>
                             <span className={sectionTitleClass}>Status</span>
                         </div>
-                        <div className="p-5">
+                        <div className="p-5 space-y-4">
                             <div className="grid grid-cols-4 gap-2.5">
                                 {STATUS_OPTIONS.map((opt) => (
                                     <button
                                         key={opt.value}
                                         type="button"
                                         onClick={() => setData('status', opt.value)}
-                                        className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border text-xs font-medium transition-all duration-150 ${data.status === opt.value ? opt.active : opt.inactive
-                                            }`}
+                                        className={`flex flex-col items-center gap-1.5 py-3 rounded-lg border text-xs font-medium transition-all duration-150 ${
+                                            data.status === opt.value ? opt.active : opt.inactive
+                                        }`}
                                     >
                                         {opt.icon}
                                         {opt.label}
                                     </button>
                                 ))}
                             </div>
+
+                            {/* ✅ FAIL REASON — status === 'fail' නම් පෙනෙනවා */}
+                            {data.status === 'fail' && (
+                                <div className="mt-3 p-4 bg-red-50 border border-red-100 rounded-xl space-y-1 animate-in fade-in duration-200">
+                                    <label className="block text-xs font-semibold text-red-700 mb-1.5">
+                                        Fail reason
+                                        <span className="text-red-400 ml-0.5">*</span>
+                                    </label>
+                                    <textarea
+                                        className="w-full text-sm px-3 py-2 rounded-lg border border-red-200 bg-white text-gray-900 placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-400/20 focus:border-red-400 transition-all resize-none h-24"
+                                        placeholder="Describe why this call failed..."
+                                        value={data.fail_reason}
+                                        onChange={(e) => setData('fail_reason', e.target.value)}
+                                    />
+                                    {errors.fail_reason && <p className="text-xs text-red-500">{errors.fail_reason}</p>}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* ── CALLBACK DONE ── */}
+                    <div className={sectionClass}>
+                        <div className={sectionHeaderClass}>
+                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span className={sectionTitleClass}>Callback status</span>
+                        </div>
+                        <div className="p-5 space-y-4">
+
+                            {/* Yes / No toggle */}
+                            <div>
+                                <label className={labelClass}>Is callback done?</label>
+                                <div className="flex gap-3 mt-1">
+                                    {/* YES */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setData('is_callback_done', 'yes')}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
+                                            data.is_callback_done === 'yes'
+                                                ? 'bg-emerald-50 border-emerald-400 text-emerald-700'
+                                                : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Yes
+                                    </button>
+
+                                    {/* NO */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setData('is_callback_done', 'no')}
+                                        className={`flex items-center gap-2 px-5 py-2.5 rounded-lg border text-sm font-medium transition-all duration-150 ${
+                                            data.is_callback_done === 'no'
+                                                ? 'bg-red-50 border-red-400 text-red-700'
+                                                : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                        No
+                                    </button>
+                                </div>
+                                {errors.is_callback_done && <p className="mt-1 text-xs text-red-500">{errors.is_callback_done}</p>}
+                            </div>
+
+                            {/* ✅ CALLBACK NOTE — is_callback_done === 'yes' නම් පෙනෙනවා */}
+                            {data.is_callback_done === 'yes' && (
+                                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-1 animate-in fade-in duration-200">
+                                    <label className="block text-xs font-semibold text-emerald-700 mb-1.5">
+                                        Callback note
+                                    </label>
+                                    <textarea
+                                        className="w-full text-sm px-3 py-2 rounded-lg border border-emerald-200 bg-white text-gray-900 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all resize-none h-24"
+                                        placeholder="What was discussed during the callback..."
+                                        value={data.callback_note}
+                                        onChange={(e) => setData('callback_note', e.target.value)}
+                                    />
+                                    {errors.callback_note && <p className="text-xs text-red-500">{errors.callback_note}</p>}
+                                </div>
+                            )}
+
                         </div>
                     </div>
 
@@ -397,7 +455,7 @@ export default function Create({
                         <button
                             type="submit"
                             disabled={processing}
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors duration-150"
+                            className="flex items-center gap-2 bg-gray-900 hover:bg-gray-700 disabled:bg-gray-400 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-colors duration-150 shadow-sm"
                         >
                             {processing ? (
                                 <>
@@ -405,14 +463,14 @@ export default function Create({
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                                     </svg>
-                                    Saving...
+                                    Updating...
                                 </>
                             ) : (
                                 <>
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                     </svg>
-                                    Save record
+                                    Update record
                                 </>
                             )}
                         </button>

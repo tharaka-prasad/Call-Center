@@ -13,28 +13,32 @@ return new class extends Migration
     {
         Schema::create('call_recordes', function (Blueprint $table) {
             $table->id();
-            $table->string('CustomerName')->nullable();
-            $table->string('CustomerPhoneNumber')->nullable();
-            $table->string('CustomerAddress')->nullable();
-            $table->string('CustomerEmail')->nullable();
-            $table->string('CustomerCompany')->nullable();
-            $table->string('product')->nullable();
+            $table->string('customerName')->nullable();
+            $table->string('customerPhoneNumber')->nullable();
+            $table->string('customerAddress')->nullable();
+            $table->string('customerEmail')->nullable();
+            $table->string('customerCompany')->nullable();
+            $table->integer('product')->nullable();
+            $table->integer('productModel')->nullable();
+            $table->decimal('productPrice', 12, 2)->default(0)->nullable();
+            $table->decimal('discountPrice', 12, 2)->default(0)->nullable();
             $table->integer('reason')->nullable();
+            $table->integer('district')->nullable();
             $table->enum('status', [
                 'pending',
                 'complete',
                 'close',
                 'fail',
             ])->default('pending')->nullable();
-            $table->integer('CompanyId')->nullable();
+            $table->integer('companyId')->nullable();
             $table->text('fail_reason')->nullable();
             $table->integer('callback_days')->nullable();
-            $table->integer('CreatedBy')->nullable();
+            $table->integer('createdBy')->nullable();
             $table->dateTime('callback_date')->nullable();
+            $table->dateTime('closeDate')->nullable();
             $table->text('callback_note')->nullable();
             $table->string('callback_time')->nullable();
             $table->enum('is_callback_done', ['yes', 'no'])->default('no')->nullable();
-
             $table->text('callback_description')->nullable();
             $table->timestamps();
         });

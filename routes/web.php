@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CallRecordeController;
+use App\Http\Controllers\CompanyDeatailsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -32,6 +34,23 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/call-records-store', [CallRecordeController::class, 'store'])
         ->name('call-records.store');
+
+    Route::get('/call-records/{id}/edit', [CallRecordeController::class, 'edit'])
+        ->name('call-records.edit');
+
+    Route::put('/call-records/{id}', [CallRecordeController::class, 'update'])
+        ->name('call-records.update');
+
+    Route::get('/call-records-Report', [ReportController::class, 'index'])
+        ->name('report.index');
+
+
+
+
+
+    Route::get('/company-settings', [CompanyDeatailsController::class, 'index'])
+        ->name('company.index');
+
 });
 
 require __DIR__ . '/auth.php';
