@@ -55,6 +55,19 @@ const stats = [
         color: '#dc2626',
         bg: '#fef2f2',
     },
+    {
+        label: 'Failed Calls',
+        value: '43',
+        change: '-2%',
+        up: false,
+        icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+        ),
+        color: '#ea580c',
+        bg: '#fff7ed',
+    },
 ];
 
 const recentCalls = [
@@ -115,12 +128,13 @@ export default function Dashboard() {
                 /* stat cards */
                 .stat-grid {
                     display: grid;
-                    grid-template-columns: repeat(4, 1fr);
+                    grid-template-columns: repeat(5, 1fr);
                     gap: 1rem;
                     margin-bottom: 1.75rem;
                 }
-                @media (max-width: 900px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
-                @media (max-width: 520px) { .stat-grid { grid-template-columns: 1fr; } }
+                @media (max-width: 1100px) { .stat-grid { grid-template-columns: repeat(3, 1fr); } }
+                @media (max-width: 700px)  { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+                @media (max-width: 420px)  { .stat-grid { grid-template-columns: 1fr; } }
 
                 .stat-card {
                     background: #fff;
