@@ -36,6 +36,8 @@ class CallRecorde extends Model
         'companyId',
         'is_callback_done',
         'callback_description',
+        'closeDate',
+        'closeNote',
     ];
 
     protected $casts = [

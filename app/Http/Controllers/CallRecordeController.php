@@ -111,7 +111,16 @@ class CallRecordeController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = Auth::user();
+
+        $call = CallRecorde::where('id', $id)
+            ->where('companyId', $user->companyid)
+            ->with(['district', 'reason', 'product', 'productModel', 'creator'])
+            ->firstOrFail();
+
+        return Inertia::render('CallRecords/Show', [
+            'call' => $call,
+        ]);
     }
 
     /**
@@ -146,41 +155,56 @@ class CallRecordeController extends Controller
             ->firstOrFail();
 
         $request->validate([
-            'customerName'        => 'required|string|max:255',
-            'customerPhoneNumber' => 'required|string|max:20',
-            'customerAddress'     => 'nullable|string',
-            'customerEmail'       => 'nullable|email',
-            'customerCompany'     => 'nullable|string|max:255',
-            'district'            => 'nullable|integer',
-            'reason'              => 'nullable|integer',
-            'product'             => 'nullable|integer',
-            'productModel'        => 'nullable|integer',
-            'productPrice'        => 'nullable|numeric',
-            'discountPrice'       => 'nullable|numeric',
-            'callback_date'       => 'nullable|date',
-            'status'              => 'required|in:pending,complete,close,fail',
-            'fail_reason'         => 'nullable|required_if:status,fail|string',
-            'is_callback_done'    => 'nullable|in:yes,no',
-            'callback_note'       => 'nullable|string',
+            'customerName'         => 'required|string|max:255',
+            'customerPhoneNumber'  => 'required|string|max:20',
+            'customerAddress'      => 'nullable|string',
+            'customerEmail'        => 'nullable|email',
+            'customerCompany'      => 'nullable|string|max:255',
+            'district'             => 'nullable|integer',
+            'reason'               => 'nullable|integer',
+            'product'              => 'nullable|integer',
+            'productModel'         => 'nullable|integer',
+            'productPrice'         => 'nullable|numeric',
+            'discountPrice'        => 'nullable|numeric',
+            'callback_date'        => 'nullable|date',
+            'status'               => 'required|in:pending,complete,close,fail',
+            'fail_reason'          => 'nullable|required_if:status,fail|string',
+            'closeDate'            => 'nullable|required_if:status,close|date',
+            'closeNote'            => 'nullable|string',
+            'is_callback_done'     => 'nullable|in:yes,no',
+            'callback_description' => 'nullable|string',
         ]);
 
         $call->update([
-            'customerName'        => $request->customerName,
-            'customerPhoneNumber' => $request->customerPhoneNumber,
-            'customerAddress'     => $request->customerAddress,
-            'customerEmail'       => $request->customerEmail,
-            'customerCompany'     => $request->customerCompany,
-            'district'            => $request->district,
-            'reason'              => $request->reason,
-            'product'             => $request->product,
-            'productModel'        => $request->productModel,
-            'productPrice'        => $request->productPrice,
-            'discountPrice'       => $request->discountPrice,
-            'callback_date'       => $request->callback_date,
-            'status'              => $request->status,
-            'fail_reason'         => $request->status === 'fail' ? $request->fail_reason : null,
-            'is_callback_done'    => $request->is_callback_done,
-            'callback_note'       => $request->is_callback_done === 'yes' ? $request->callback_note : null,
+            'customerName'         => $request->customerName,
+            'customerPhoneNumber'  => $request->customerPhoneNumber,
+            'customerAddress'      => $request->customerAddress,
+            'customerEmail'        => $request->customerEmail,
+            'customerCompany'      => $request->customerCompany,
+            'district'             => $request->district,
+            'reason'               => $request->reason,
+            'product'              => $request->product,
+            'productModel'         => $request->productModel,
+            'productPrice'         => $request->productPrice,
+            'discountPrice'        => $request->discountPrice,
+            'callback_date'        => $request->callback_date,
+            'status'               => $request->status,
+
+            'fail_reason'          => $request->status === 'fail'
+                ? $request->fail_reason
+                : null,
+
+            'closeDate'            => $request->status === 'close'
+                ? $request->closeDate
+                : null,
+            'closeNote'            => $request->status === 'close'
+                ? $request->closeNote
+                : null,
+
+            'is_callback_done'     => $request->is_callback_done,
+            'callback_description' => $request->is_callback_done === 'yes'
+                ? $request->callback_description
+                : null,
         ]);
 
         return redirect()

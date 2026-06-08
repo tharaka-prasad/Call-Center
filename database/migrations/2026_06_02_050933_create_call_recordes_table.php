@@ -36,6 +36,7 @@ return new class extends Migration
             $table->integer('createdBy')->nullable();
             $table->dateTime('callback_date')->nullable();
             $table->dateTime('closeDate')->nullable();
+            $table->text('closeNote')->nullable();
             $table->text('callback_note')->nullable();
             $table->string('callback_time')->nullable();
             $table->enum('is_callback_done', ['yes', 'no'])->default('no')->nullable();
