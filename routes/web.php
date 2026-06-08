@@ -35,11 +35,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/call-records-store', [CallRecordeController::class, 'store'])
         ->name('call-records.store');
 
+    Route::get('/call-records/{id}', [CallRecordeController::class, 'show'])
+        ->name('call-records.show');
+
     Route::get('/call-records/{id}/edit', [CallRecordeController::class, 'edit'])
         ->name('call-records.edit');
 
     Route::put('/call-records/{id}', [CallRecordeController::class, 'update'])
         ->name('call-records.update');
+
+    Route::delete('/call-records/{id}', [CallRecordeController::class, 'destroy'])
+        ->name('call-records.destroy');
+
+
+
 
     Route::get('/call-records-Report', [ReportController::class, 'index'])
         ->name('report.index');

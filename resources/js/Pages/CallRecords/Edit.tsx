@@ -69,31 +69,39 @@ const STATUS_OPTIONS = [
 
 export default function Edit({ call, reasons = [], products = [], districts = [] }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        customerName:         call.customerName         ?? '',
-        customerPhoneNumber:  call.customerPhoneNumber  ?? '',
-        customerAddress:      call.customerAddress      ?? '',
-        customerEmail:        call.customerEmail        ?? '',
-        customerCompany:      call.customerCompany      ?? '',
+        customerName:        call.customerName        ?? '',
+        customerPhoneNumber: call.customerPhoneNumber ?? '',
+        customerAddress:     call.customerAddress     ?? '',
+        customerEmail:       call.customerEmail       ?? '',
+        customerCompany:     call.customerCompany     ?? '',
 
-        district:             call.district             ?? '',
-        reason:               call.reason               ?? '',
+        district:            call.district            ?? '',
+        reason:              call.reason              ?? '',
 
-        product:              call.product              ?? '',
-        productModel:         call.productModel         ?? '',
+        product:             call.product             ?? '',
+        productModel:        call.productModel        ?? '',
 
-        productPrice:         call.productPrice         ?? '',
-        discountPrice:        call.discountPrice        ?? '',
+        productPrice:        call.productPrice        ?? '',
+        discountPrice:       call.discountPrice       ?? '',
 
-        callback_date:        call.callback_date
+        callback_date:       call.callback_date
                                 ? new Date(call.callback_date).toISOString().split('T')[0]
                                 : '',
 
-        status:               call.status               ?? 'pending',
+        status:              call.status              ?? 'pending',
 
-        // ✅ NEW FIELDS
-        fail_reason:          call.fail_reason          ?? '',
-        is_callback_done:     call.is_callback_done     ?? '',   // 'yes' | 'no' | ''
-        callback_note:        call.callback_note        ?? '',
+        // Fail fields
+        fail_reason:         call.fail_reason         ?? '',
+
+        // Close fields
+        closeDate:           call.closeDate
+                                ? new Date(call.closeDate).toISOString().split('T')[0]
+                                : '',
+        closeNote:           call.closeNote           ?? '',
+
+        // Callback fields
+        is_callback_done:    call.is_callback_done    ?? '',
+        callback_description: call.callback_description ?? '',
     });
 
     const selectedProduct = products.find((p: any) => p.id == data.product);
@@ -369,6 +377,44 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                     {errors.fail_reason && <p className="text-xs text-red-500">{errors.fail_reason}</p>}
                                 </div>
                             )}
+
+                            {/* ✅ CLOSING DATE + NOTE — status === 'close' නම් පෙනෙනවා */}
+                            {data.status === 'close' && (
+                                <div className="mt-3 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3 animate-in fade-in duration-200">
+                                    {/* Closing Date */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                                            Closing date
+                                            <span className="text-red-400 ml-0.5">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-400/20 focus:border-gray-400 transition-all"
+                                            value={data.closeDate}
+                                            onChange={(e) => setData('closeDate', e.target.value)}
+                                        />
+                                        {errors.closeDate && (
+                                            <p className="mt-1 text-xs text-red-500">{errors.closeDate}</p>
+                                        )}
+                                    </div>
+
+                                    {/* Close Note */}
+                                    <div>
+                                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                                            Close note
+                                        </label>
+                                        <textarea
+                                            className="w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400/20 focus:border-gray-400 transition-all resize-none h-24"
+                                            placeholder="Any notes about closing this record..."
+                                            value={data.closeNote}
+                                            onChange={(e) => setData('closeNote', e.target.value)}
+                                        />
+                                        {errors.closeNote && (
+                                            <p className="text-xs text-red-500">{errors.closeNote}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -381,12 +427,9 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                             <span className={sectionTitleClass}>Callback status</span>
                         </div>
                         <div className="p-5 space-y-4">
-
-                            {/* Yes / No toggle */}
                             <div>
                                 <label className={labelClass}>Is callback done?</label>
                                 <div className="flex gap-3 mt-1">
-                                    {/* YES */}
                                     <button
                                         type="button"
                                         onClick={() => setData('is_callback_done', 'yes')}
@@ -402,7 +445,6 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                         Yes
                                     </button>
 
-                                    {/* NO */}
                                     <button
                                         type="button"
                                         onClick={() => setData('is_callback_done', 'no')}
@@ -421,7 +463,7 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 {errors.is_callback_done && <p className="mt-1 text-xs text-red-500">{errors.is_callback_done}</p>}
                             </div>
 
-                            {/* ✅ CALLBACK NOTE — is_callback_done === 'yes' නම් පෙනෙනවා */}
+                            {/* ✅ CALLBACK DESCRIPTION — is_callback_done === 'yes' නම් පෙනෙනවා */}
                             {data.is_callback_done === 'yes' && (
                                 <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-1 animate-in fade-in duration-200">
                                     <label className="block text-xs font-semibold text-emerald-700 mb-1.5">
@@ -430,13 +472,12 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                     <textarea
                                         className="w-full text-sm px-3 py-2 rounded-lg border border-emerald-200 bg-white text-gray-900 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all resize-none h-24"
                                         placeholder="What was discussed during the callback..."
-                                        value={data.callback_note}
-                                        onChange={(e) => setData('callback_note', e.target.value)}
+                                        value={data.callback_description}
+                                        onChange={(e) => setData('callback_description', e.target.value)}
                                     />
-                                    {errors.callback_note && <p className="text-xs text-red-500">{errors.callback_note}</p>}
+                                    {errors.callback_description && <p className="text-xs text-red-500">{errors.callback_description}</p>}
                                 </div>
                             )}
-
                         </div>
                     </div>
 
