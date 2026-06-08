@@ -73,8 +73,8 @@ export default function Authenticated({
                                     Report
                                 </NavLink>
                                 <NavLink
-                                    href={route('report.index')}
-                                    active={route().current('report.index')}
+                                    href={route('company.index')}
+                                    active={route().current('company.index')}
                                 >
                                     Company Settings
                                 </NavLink>
