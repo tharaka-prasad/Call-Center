@@ -21,13 +21,14 @@ type Props = {
 };
 
 export default function Index({ calls, filters, districts, reasons, products, models }: Props) {
+
     const [values, setValues] = useState({
         from_date: filters?.from_date || "",
         to_date:   filters?.to_date   || "",
-        district:  filters?.district  || "",
-        product:   filters?.product   || "",
-        model:     filters?.model     || "",
-        reason:    filters?.reason    || "",
+        district:  filters?.district  ? String(filters.district) : "",
+        product:   filters?.product   ? String(filters.product)  : "",
+        model:     filters?.model     ? String(filters.model)    : "",
+        reason:    filters?.reason    ? String(filters.reason)   : "",
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -41,11 +42,10 @@ export default function Index({ calls, filters, districts, reasons, products, mo
 
     const applyFilter = (e: React.FormEvent) => {
         e.preventDefault();
-        // ✅ empty values remove කරනවා
         const cleanValues = Object.fromEntries(
             Object.entries(values).filter(([_, v]) => v !== "")
         );
-        router.get(route("call-records.index"), cleanValues, {
+        router.get(route("report.index"), cleanValues, {
             preserveState: true,
             replace: true,
         });
@@ -53,16 +53,16 @@ export default function Index({ calls, filters, districts, reasons, products, mo
 
     const resetFilter = () => {
         setValues({ from_date: "", to_date: "", district: "", product: "", model: "", reason: "" });
-        router.get(route("call-records.index"));
+        router.get(route("report.index"));
     };
 
-    // ── Stats ────────────────────────────────────────────────────────────────────
-    const total         = calls.length;
-    const completed     = calls.filter((c) => c.status === "complete").length;
-    const pending       = calls.filter((c) => c.status === "pending").length;
-    const failed        = calls.filter((c) => c.status === "fail").length;
+    // ── Stats ─────────────────────────────────────────────────────────────────
+    const total     = calls.length;
+    const completed = calls.filter((c) => c.status === "complete").length;
+    const pending   = calls.filter((c) => c.status === "pending").length;
+    const failed    = calls.filter((c) => c.status === "fail").length;
 
-    // ── Active filter label (for exports) ────────────────────────────────────────
+    // ── Active filter labels ───────────────────────────────────────────────────
     const activeFilters = [
         values.from_date && `From: ${values.from_date}`,
         values.to_date   && `To: ${values.to_date}`,
@@ -72,7 +72,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
         values.reason    && `Reason: ${reasons.find(r => String(r.id) === values.reason)?.reason ?? ""}`,
     ].filter(Boolean).join("  |  ");
 
-    // ── Status badge config ───────────────────────────────────────────────────────
+    // ── Status badge ──────────────────────────────────────────────────────────
     const getStatusBadge = (status: string) => {
         switch (status) {
             case "complete": return { bg: "bg-emerald-50 text-emerald-600 border-emerald-200", dot: "bg-emerald-400", label: "Complete" };
@@ -83,7 +83,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
         }
     };
 
-    // ── Excel Export ──────────────────────────────────────────────────────────────
+    // ── Excel Export ──────────────────────────────────────────────────────────
     const downloadExcel = () => {
         const rows = calls.map((c) => ({
             Customer: c.customerName        ?? "",
@@ -102,12 +102,24 @@ export default function Index({ calls, filters, districts, reasons, products, mo
             { wch: 16 }, { wch: 20 }, { wch: 16 },
             { wch: 11 }, { wch: 13 },
         ];
+
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Call Records");
+
+        if (activeFilters) {
+            const filterSheet = XLSX.utils.aoa_to_sheet([
+                ["Applied Filters"],
+                [activeFilters],
+                [],
+                ["Generated", new Date().toLocaleDateString("en-GB")],
+            ]);
+            XLSX.utils.book_append_sheet(wb, filterSheet, "Filters");
+        }
+
         XLSX.writeFile(wb, "call_records_report.xlsx");
     };
 
-    // ── PDF Export ────────────────────────────────────────────────────────────────
+    // ── PDF Export ────────────────────────────────────────────────────────────
     const downloadPDF = () => {
         const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
@@ -144,7 +156,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
         doc.save("call_records_report.pdf");
     };
 
-    // ── Filtered models (client-side) ─────────────────────────────────────────────
+    // ── Filtered models ───────────────────────────────────────────────────────
     const filteredModels = values.product
         ? models.filter((m) => String(m.productId) === values.product)
         : models;
@@ -152,7 +164,6 @@ export default function Index({ calls, filters, districts, reasons, products, mo
     const selectClass =
         "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-400 transition-all appearance-none cursor-pointer";
 
-    // ── Render ────────────────────────────────────────────────────────────────────
     return (
         <AuthenticatedLayout
             header={
@@ -169,7 +180,6 @@ export default function Index({ calls, filters, districts, reasons, products, mo
                         </div>
                     </div>
 
-                    {/* Export buttons */}
                     <div className="flex items-center gap-2">
                         <button
                             onClick={downloadExcel}
@@ -247,7 +257,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
                                     <select name="district" value={values.district} onChange={handleChange} className={selectClass}>
                                         <option value="">All Districts</option>
                                         {districts.map((d) => (
-                                            <option key={d.id} value={d.id}>{d.districtName}</option>
+                                            <option key={d.id} value={String(d.id)}>{d.districtName}</option>
                                         ))}
                                     </select>
                                     <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -263,7 +273,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
                                     <select name="product" value={values.product} onChange={handleChange} className={selectClass}>
                                         <option value="">All Products</option>
                                         {products.map((p) => (
-                                            <option key={p.id} value={p.id}>{p.productName}</option>
+                                            <option key={p.id} value={String(p.id)}>{p.productName}</option>
                                         ))}
                                     </select>
                                     <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -272,7 +282,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
                                 </div>
                             </div>
 
-                            {/* Model — filtered by product */}
+                            {/* Model */}
                             <div className="flex flex-col gap-1">
                                 <label className="text-xs font-medium text-gray-400">Model</label>
                                 <div className="relative">
@@ -280,12 +290,12 @@ export default function Index({ calls, filters, districts, reasons, products, mo
                                         name="model"
                                         value={values.model}
                                         onChange={handleChange}
-                                        disabled={filteredModels.length === 0}
-                                        className={`${selectClass} ${filteredModels.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+                                        disabled={!values.product || filteredModels.length === 0}
+                                        className={`${selectClass} ${!values.product || filteredModels.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
                                     >
                                         <option value="">All Models</option>
                                         {filteredModels.map((m) => (
-                                            <option key={m.id} value={m.id}>{m.productModel}</option>
+                                            <option key={m.id} value={String(m.id)}>{m.productModel}</option>
                                         ))}
                                     </select>
                                     <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -301,7 +311,7 @@ export default function Index({ calls, filters, districts, reasons, products, mo
                                     <select name="reason" value={values.reason} onChange={handleChange} className={selectClass}>
                                         <option value="">All Reasons</option>
                                         {reasons.map((r) => (
-                                            <option key={r.id} value={r.id}>{r.reason}</option>
+                                            <option key={r.id} value={String(r.id)}>{r.reason}</option>
                                         ))}
                                     </select>
                                     <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
