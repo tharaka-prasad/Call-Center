@@ -26,7 +26,10 @@ class CallRecorde extends Model
         'discountPrice',
         'district',
         'reason',
+        'description',
         'status',
+        'completeNote',
+        'completeDate',
         'fail_reason',
         'callback_days',
         'createdBy',
@@ -44,6 +47,9 @@ class CallRecorde extends Model
         'callback_date' => 'datetime',
         'created_at'    => 'datetime',
         'updated_at'    => 'datetime',
+        'closeDate'     => 'datetime',
+        'completeDate'  => 'datetime',
+        
     ];
 
     // COMPANY
