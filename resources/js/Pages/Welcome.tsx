@@ -150,29 +150,6 @@ export default function Welcome({
             `}</style>
 
             <div className="page">
-                <nav>
-                    <a href="/" className="logo">
-                        <div className="logo-icon">📞</div>
-                        CallCenter
-                    </a>
-                    <div className="nav-links">
-                        {auth.user ? (
-                            <Link href={route('dashboard')} className="btn btn-solid">
-                                Dashboard
-                            </Link>
-                        ) : (
-                            <>
-                                <Link href={route('login')} className="btn btn-outline">
-                                    Log in
-                                </Link>
-                                <Link href={route('register')} className="btn btn-solid">
-                                    Register
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </nav>
-
                 <div className="hero">
                     <h1>Welcome to<br /><span>CallCenter</span></h1>
                     <p>Manage your agents, monitor calls, and deliver great customer support — all in one place.</p>

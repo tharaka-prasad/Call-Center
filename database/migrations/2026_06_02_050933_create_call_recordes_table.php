@@ -24,12 +24,15 @@ return new class extends Migration
             $table->decimal('discountPrice', 12, 2)->default(0)->nullable();
             $table->integer('reason')->nullable();
             $table->integer('district')->nullable();
+            $table->text('description')->nullable();
             $table->enum('status', [
                 'pending',
                 'complete',
                 'close',
                 'fail',
             ])->default('pending')->nullable();
+            $table->text('completeNote')->nullable();
+            $table->dateTime('completeDate')->nullable();
             $table->integer('companyId')->nullable();
             $table->text('fail_reason')->nullable();
             $table->integer('callback_days')->nullable();
@@ -41,6 +44,7 @@ return new class extends Migration
             $table->string('callback_time')->nullable();
             $table->enum('is_callback_done', ['yes', 'no'])->default('no')->nullable();
             $table->text('callback_description')->nullable();
+
             $table->timestamps();
         });
     }
