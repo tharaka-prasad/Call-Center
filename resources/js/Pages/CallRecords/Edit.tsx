@@ -12,12 +12,8 @@ const inputClass =
     'w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all duration-150';
 
 const labelClass = 'block text-xs font-semibold text-gray-800 mb-1.5';
-
 const sectionClass = 'bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden';
-
-const sectionHeaderClass =
-    'flex items-center gap-2 px-5 py-3.5 border-b border-gray-100 bg-gray-50/60';
-
+const sectionHeaderClass = 'flex items-center gap-2 px-5 py-3.5 border-b border-gray-100 bg-gray-50/60';
 const sectionTitleClass = 'text-xs font-semibold text-gray-500 uppercase tracking-wider';
 
 const STATUS_OPTIONS = [
@@ -69,38 +65,39 @@ const STATUS_OPTIONS = [
 
 export default function Edit({ call, reasons = [], products = [], districts = [] }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        customerName:        call.customerName        ?? '',
-        customerPhoneNumber: call.customerPhoneNumber ?? '',
-        customerAddress:     call.customerAddress     ?? '',
-        customerEmail:       call.customerEmail       ?? '',
-        customerCompany:     call.customerCompany     ?? '',
-
-        district:            call.district            ?? '',
-        reason:              call.reason              ?? '',
-
-        product:             call.product             ?? '',
-        productModel:        call.productModel        ?? '',
-
-        productPrice:        call.productPrice        ?? '',
-        discountPrice:       call.discountPrice       ?? '',
-
-        callback_date:       call.callback_date
+        customerName:         call.customerName        ?? '',
+        customerPhoneNumber:  call.customerPhoneNumber ?? '',
+        customerAddress:      call.customerAddress     ?? '',
+        customerEmail:        call.customerEmail       ?? '',
+        customerCompany:      call.customerCompany     ?? '',
+        district:             call.district            ?? '',
+        reason:               call.reason              ?? '',
+        product:              call.product             ?? '',
+        productModel:         call.productModel        ?? '',
+        productPrice:         call.productPrice        ?? '',
+        discountPrice:        call.discountPrice       ?? '',
+        callback_date:        call.callback_date
                                 ? new Date(call.callback_date).toISOString().split('T')[0]
                                 : '',
+        status:               call.status              ?? 'pending',
 
-        status:              call.status              ?? 'pending',
+        // Fail
+        fail_reason:          call.fail_reason         ?? '',
 
-        // Fail fields
-        fail_reason:         call.fail_reason         ?? '',
-
-        // Close fields
-        closeDate:           call.closeDate
+        // Close
+        closeDate:            call.closeDate
                                 ? new Date(call.closeDate).toISOString().split('T')[0]
                                 : '',
-        closeNote:           call.closeNote           ?? '',
+        closeNote:            call.closeNote           ?? '',
 
-        // Callback fields
-        is_callback_done:    call.is_callback_done    ?? '',
+        // Complete
+        completeDate:         call.completeDate
+                                ? new Date(call.completeDate).toISOString().split('T')[0]
+                                : '',
+        completeNote:         call.completeNote        ?? '',
+
+        // Callback
+        is_callback_done:     call.is_callback_done    ?? '',
         callback_description: call.callback_description ?? '',
     });
 
@@ -152,67 +149,32 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                         <div className="p-5 grid grid-cols-2 gap-4">
                             <div>
                                 <label className={labelClass}>Customer name</label>
-                                <input
-                                    className={inputClass}
-                                    placeholder="e.g. Nuwan Perera"
-                                    value={data.customerName}
-                                    onChange={(e) => setData('customerName', e.target.value)}
-                                />
+                                <input className={inputClass} placeholder="e.g. Nuwan Perera" value={data.customerName} onChange={(e) => setData('customerName', e.target.value)} />
                                 {errors.customerName && <p className="mt-1 text-xs text-red-500">{errors.customerName}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Phone number</label>
-                                <input
-                                    className={inputClass}
-                                    placeholder="e.g. 077 123 4567"
-                                    value={data.customerPhoneNumber}
-                                    onChange={(e) => setData('customerPhoneNumber', e.target.value)}
-                                />
+                                <input className={inputClass} placeholder="e.g. 077 123 4567" value={data.customerPhoneNumber} onChange={(e) => setData('customerPhoneNumber', e.target.value)} />
                                 {errors.customerPhoneNumber && <p className="mt-1 text-xs text-red-500">{errors.customerPhoneNumber}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Email address</label>
-                                <input
-                                    type="email"
-                                    className={inputClass}
-                                    placeholder="nuwan@example.com"
-                                    value={data.customerEmail}
-                                    onChange={(e) => setData('customerEmail', e.target.value)}
-                                />
+                                <input type="email" className={inputClass} placeholder="nuwan@example.com" value={data.customerEmail} onChange={(e) => setData('customerEmail', e.target.value)} />
                                 {errors.customerEmail && <p className="mt-1 text-xs text-red-500">{errors.customerEmail}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Company</label>
-                                <input
-                                    className={inputClass}
-                                    placeholder="Company name"
-                                    value={data.customerCompany}
-                                    onChange={(e) => setData('customerCompany', e.target.value)}
-                                />
+                                <input className={inputClass} placeholder="Company name" value={data.customerCompany} onChange={(e) => setData('customerCompany', e.target.value)} />
                                 {errors.customerCompany && <p className="mt-1 text-xs text-red-500">{errors.customerCompany}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Address</label>
-                                <textarea
-                                    className={inputClass + ' resize-none h-20'}
-                                    placeholder="Street, city..."
-                                    value={data.customerAddress}
-                                    onChange={(e) => setData('customerAddress', e.target.value)}
-                                />
+                                <textarea className={inputClass + ' resize-none h-20'} placeholder="Street, city..." value={data.customerAddress} onChange={(e) => setData('customerAddress', e.target.value)} />
                                 {errors.customerAddress && <p className="mt-1 text-xs text-red-500">{errors.customerAddress}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>District</label>
-                                <select
-                                    className={inputClass}
-                                    value={data.district}
-                                    onChange={(e) => setData('district', e.target.value)}
-                                >
+                                <select className={inputClass} value={data.district} onChange={(e) => setData('district', e.target.value)}>
                                     <option value="">Select district</option>
                                     {districts.map((d: any) => (
                                         <option key={d.id} value={d.id}>{d.districtName}</option>
@@ -250,7 +212,6 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 </select>
                                 {errors.product && <p className="mt-1 text-xs text-red-500">{errors.product}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Model</label>
                                 <select
@@ -258,9 +219,7 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                     value={data.productModel}
                                     disabled={!selectedProduct}
                                     onChange={(e) => {
-                                        const model = selectedProduct?.models?.find(
-                                            (m: any) => m.id == e.target.value
-                                        );
+                                        const model = selectedProduct?.models?.find((m: any) => m.id == e.target.value);
                                         setData('productModel', e.target.value);
                                         if (model) setData('productPrice', model.price);
                                     }}
@@ -272,7 +231,6 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 </select>
                                 {errors.productModel && <p className="mt-1 text-xs text-red-500">{errors.productModel}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Unit price</label>
                                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50">
@@ -284,16 +242,9 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                     </span>
                                 </div>
                             </div>
-
                             <div>
                                 <label className={labelClass}>Discount price</label>
-                                <input
-                                    type="number"
-                                    className={inputClass}
-                                    placeholder="0.00"
-                                    value={data.discountPrice}
-                                    onChange={(e) => setData('discountPrice', e.target.value)}
-                                />
+                                <input type="number" className={inputClass} placeholder="0.00" value={data.discountPrice} onChange={(e) => setData('discountPrice', e.target.value)} />
                                 {errors.discountPrice && <p className="mt-1 text-xs text-red-500">{errors.discountPrice}</p>}
                             </div>
                         </div>
@@ -310,11 +261,7 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                         <div className="p-5 grid grid-cols-2 gap-4">
                             <div>
                                 <label className={labelClass}>Reason</label>
-                                <select
-                                    className={inputClass}
-                                    value={data.reason}
-                                    onChange={(e) => setData('reason', e.target.value)}
-                                >
+                                <select className={inputClass} value={data.reason} onChange={(e) => setData('reason', e.target.value)}>
                                     <option value="">Select reason</option>
                                     {reasons.map((r: any) => (
                                         <option key={r.id} value={r.id}>{r.reason}</option>
@@ -322,15 +269,9 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 </select>
                                 {errors.reason && <p className="mt-1 text-xs text-red-500">{errors.reason}</p>}
                             </div>
-
                             <div>
                                 <label className={labelClass}>Callback date</label>
-                                <input
-                                    type="date"
-                                    className={inputClass}
-                                    value={data.callback_date}
-                                    onChange={(e) => setData('callback_date', e.target.value)}
-                                />
+                                <input type="date" className={inputClass} value={data.callback_date} onChange={(e) => setData('callback_date', e.target.value)} />
                                 {errors.callback_date && <p className="mt-1 text-xs text-red-500">{errors.callback_date}</p>}
                             </div>
                         </div>
@@ -361,12 +302,11 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 ))}
                             </div>
 
-                            {/* ✅ FAIL REASON — status === 'fail' නම් පෙනෙනවා */}
+                            {/* ── FAIL ── */}
                             {data.status === 'fail' && (
-                                <div className="mt-3 p-4 bg-red-50 border border-red-100 rounded-xl space-y-1 animate-in fade-in duration-200">
+                                <div className="mt-3 p-4 bg-red-50 border border-red-100 rounded-xl space-y-1">
                                     <label className="block text-xs font-semibold text-red-700 mb-1.5">
-                                        Fail reason
-                                        <span className="text-red-400 ml-0.5">*</span>
+                                        Fail reason <span className="text-red-400">*</span>
                                     </label>
                                     <textarea
                                         className="w-full text-sm px-3 py-2 rounded-lg border border-red-200 bg-white text-gray-900 placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-red-400/20 focus:border-red-400 transition-all resize-none h-24"
@@ -378,14 +318,12 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 </div>
                             )}
 
-                            {/* ✅ CLOSING DATE + NOTE — status === 'close' නම් පෙනෙනවා */}
+                            {/* ── CLOSE ── */}
                             {data.status === 'close' && (
-                                <div className="mt-3 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3 animate-in fade-in duration-200">
-                                    {/* Closing Date */}
+                                <div className="mt-3 p-4 bg-gray-50 border border-gray-200 rounded-xl space-y-3">
                                     <div>
                                         <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                                            Closing date
-                                            <span className="text-red-400 ml-0.5">*</span>
+                                            Closing date <span className="text-red-400">*</span>
                                         </label>
                                         <input
                                             type="date"
@@ -393,25 +331,45 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                             value={data.closeDate}
                                             onChange={(e) => setData('closeDate', e.target.value)}
                                         />
-                                        {errors.closeDate && (
-                                            <p className="mt-1 text-xs text-red-500">{errors.closeDate}</p>
-                                        )}
+                                        {errors.closeDate && <p className="mt-1 text-xs text-red-500">{errors.closeDate}</p>}
                                     </div>
-
-                                    {/* Close Note */}
                                     <div>
-                                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                                            Close note
-                                        </label>
+                                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Close note</label>
                                         <textarea
                                             className="w-full text-sm px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400/20 focus:border-gray-400 transition-all resize-none h-24"
                                             placeholder="Any notes about closing this record..."
                                             value={data.closeNote}
                                             onChange={(e) => setData('closeNote', e.target.value)}
                                         />
-                                        {errors.closeNote && (
-                                            <p className="text-xs text-red-500">{errors.closeNote}</p>
-                                        )}
+                                        {errors.closeNote && <p className="text-xs text-red-500">{errors.closeNote}</p>}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* ── COMPLETE ── */}
+                            {data.status === 'complete' && (
+                                <div className="mt-3 p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-3">
+                                    <div>
+                                        <label className="block text-xs font-semibold text-emerald-700 mb-1.5">
+                                            Complete date <span className="text-red-400">*</span>
+                                        </label>
+                                        <input
+                                            type="date"
+                                            className="w-full text-sm px-3 py-2 rounded-lg border border-emerald-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all"
+                                            value={data.completeDate}
+                                            onChange={(e) => setData('completeDate', e.target.value)}
+                                        />
+                                        {errors.completeDate && <p className="mt-1 text-xs text-red-500">{errors.completeDate}</p>}
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold text-emerald-700 mb-1.5">Complete note</label>
+                                        <textarea
+                                            className="w-full text-sm px-3 py-2 rounded-lg border border-emerald-200 bg-white text-gray-900 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all resize-none h-24"
+                                            placeholder="Notes about completing this record..."
+                                            value={data.completeNote}
+                                            onChange={(e) => setData('completeNote', e.target.value)}
+                                        />
+                                        {errors.completeNote && <p className="text-xs text-red-500">{errors.completeNote}</p>}
                                     </div>
                                 </div>
                             )}
@@ -444,7 +402,6 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                         </svg>
                                         Yes
                                     </button>
-
                                     <button
                                         type="button"
                                         onClick={() => setData('is_callback_done', 'no')}
@@ -463,12 +420,9 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 {errors.is_callback_done && <p className="mt-1 text-xs text-red-500">{errors.is_callback_done}</p>}
                             </div>
 
-                            {/* ✅ CALLBACK DESCRIPTION — is_callback_done === 'yes' නම් පෙනෙනවා */}
                             {data.is_callback_done === 'yes' && (
-                                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-1 animate-in fade-in duration-200">
-                                    <label className="block text-xs font-semibold text-emerald-700 mb-1.5">
-                                        Callback note
-                                    </label>
+                                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-xl space-y-1">
+                                    <label className="block text-xs font-semibold text-emerald-700 mb-1.5">Callback note</label>
                                     <textarea
                                         className="w-full text-sm px-3 py-2 rounded-lg border border-emerald-200 bg-white text-gray-900 placeholder-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 focus:border-emerald-400 transition-all resize-none h-24"
                                         placeholder="What was discussed during the callback..."
@@ -492,7 +446,6 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                             </svg>
                             Cancel
                         </Link>
-
                         <button
                             type="submit"
                             disabled={processing}

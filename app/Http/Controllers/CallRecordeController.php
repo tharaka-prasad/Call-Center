@@ -56,56 +56,63 @@ class CallRecordeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'customerName'        => 'required|string|max:255',
-            'customerPhoneNumber' => 'required|string|max:20',
-            'customerAddress'     => 'nullable|string',
-            'customerEmail'       => 'nullable|email',
-            'customerCompany'     => 'nullable|string|max:255',
-            'district'            => 'nullable|integer',
-
-            'reason'              => 'nullable|integer',
-
-            'product'             => 'nullable|integer',
-            'productModel'        => 'nullable|integer',
-
-            'productPrice'        => 'nullable|numeric',
-            'discountPrice'       => 'nullable|numeric',
-
-            'callback_date'       => 'nullable|date',
-
-            'status'              => 'required|in:pending,complete,close,fail',
+            'customerName'         => 'required|string|max:255',
+            'customerPhoneNumber'  => 'required|string|max:20',
+            'customerAddress'      => 'nullable|string',
+            'customerEmail'        => 'nullable|email',
+            'customerCompany'      => 'nullable|string|max:255',
+            'district'             => 'nullable|integer',
+            'reason'               => 'nullable|integer',
+            'product'              => 'nullable|integer',
+            'productModel'         => 'nullable|integer',
+            'productPrice'         => 'nullable|numeric',
+            'discountPrice'        => 'nullable|numeric',
+            'callback_date'        => 'nullable|date',
+            'status'               => 'required|in:pending,complete,close,fail',
+            'fail_reason'          => 'nullable|required_if:status,fail|string',
+            'closeDate'            => 'nullable|required_if:status,close|date',
+            'closeNote'            => 'nullable|string',
+            'completeDate'         => 'nullable|required_if:status,complete|date',
+            'completeNote'         => 'nullable|string',
+            'is_callback_done'     => 'nullable|in:yes,no',
+            'callback_description' => 'nullable|string',
         ]);
 
         $user = Auth::user();
 
         CallRecorde::create([
-            'customerName'        => $request->customerName,
-            'customerPhoneNumber' => $request->customerPhoneNumber,
-            'customerAddress'     => $request->customerAddress,
-            'customerEmail'       => $request->customerEmail,
-            'customerCompany'     => $request->customerCompany,
-            'district'            => $request->district,
+            'customerName'         => $request->customerName,
+            'customerPhoneNumber'  => $request->customerPhoneNumber,
+            'customerAddress'      => $request->customerAddress,
+            'customerEmail'        => $request->customerEmail,
+            'customerCompany'      => $request->customerCompany,
+            'district'             => $request->district,
+            'reason'               => $request->reason,
+            'product'              => $request->product,
+            'productModel'         => $request->productModel,
+            'productPrice'         => $request->productPrice,
+            'discountPrice'        => $request->discountPrice,
+            'callback_date'        => $request->callback_date,
+            'status'               => $request->status,
 
-            'reason'              => $request->reason,
+            'fail_reason'          => $request->status === 'fail' ? $request->fail_reason : null,
+            'closeDate'            => $request->status === 'close' ? $request->closeDate : null,
+            'closeNote'            => $request->status === 'close' ? $request->closeNote : null,
+            'completeDate'         => $request->status === 'complete' ? $request->completeDate : null,
+            'completeNote'         => $request->status === 'complete' ? $request->completeNote : null,
 
-            'product'             => $request->product,
-            'productModel'        => $request->productModel,
+            'is_callback_done'     => $request->is_callback_done,
+            'callback_description' => $request->is_callback_done === 'yes' ? $request->callback_description : null,
 
-            'productPrice'        => $request->productPrice,
-            'discountPrice'       => $request->discountPrice,
-
-            'callback_date'       => $request->callback_date,
-
-            'status'              => $request->status,
-
-            'companyId'           => $user->companyid,
-            'createdBy'           => $user->id,
+            'companyId'            => $user->companyid,
+            'createdBy'            => $user->id,
         ]);
 
         return redirect()
             ->route('call-records.index')
             ->with('success', 'Call Record Created Successfully');
     }
+
     /**
      * Display the specified resource.
      */
@@ -171,6 +178,8 @@ class CallRecordeController extends Controller
             'fail_reason'          => 'nullable|required_if:status,fail|string',
             'closeDate'            => 'nullable|required_if:status,close|date',
             'closeNote'            => 'nullable|string',
+            'completeDate'         => 'nullable|required_if:status,complete|date',
+            'completeNote'         => 'nullable|string',
             'is_callback_done'     => 'nullable|in:yes,no',
             'callback_description' => 'nullable|string',
         ]);
@@ -190,21 +199,14 @@ class CallRecordeController extends Controller
             'callback_date'        => $request->callback_date,
             'status'               => $request->status,
 
-            'fail_reason'          => $request->status === 'fail'
-                ? $request->fail_reason
-                : null,
-
-            'closeDate'            => $request->status === 'close'
-                ? $request->closeDate
-                : null,
-            'closeNote'            => $request->status === 'close'
-                ? $request->closeNote
-                : null,
+            'fail_reason'          => $request->status === 'fail' ? $request->fail_reason : null,
+            'closeDate'            => $request->status === 'close' ? $request->closeDate : null,
+            'closeNote'            => $request->status === 'close' ? $request->closeNote : null,
+            'completeDate'         => $request->status === 'complete' ? $request->completeDate : null,
+            'completeNote'         => $request->status === 'complete' ? $request->completeNote : null,
 
             'is_callback_done'     => $request->is_callback_done,
-            'callback_description' => $request->is_callback_done === 'yes'
-                ? $request->callback_description
-                : null,
+            'callback_description' => $request->is_callback_done === 'yes' ? $request->callback_description : null,
         ]);
 
         return redirect()
