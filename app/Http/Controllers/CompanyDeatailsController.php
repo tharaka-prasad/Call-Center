@@ -1,7 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
+use App\Models\Campany;
+use App\Models\District;
+use App\Models\Product;
+use App\Models\Reason;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -12,7 +15,19 @@ class CompanyDeatailsController extends Controller
      */
     public function index()
     {
+        $districts = District::orderBy('districtName')->get();
+        $reasons   = Reason::orderBy('reason')->get();
+        $companies = Campany::orderBy('companyName')->get();
+
+        $products = Product::with('models')
+            ->orderBy('productName')
+            ->get();
+
         return Inertia::render('Companysettings/Index', [
+            'districts' => $districts,
+            'reasons'   => $reasons,
+            'companies' => $companies,
+            'products'  => $products,
         ]);
     }
 
