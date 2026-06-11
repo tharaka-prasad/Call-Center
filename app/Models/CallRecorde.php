@@ -24,6 +24,7 @@ class CallRecorde extends Model
         'productModel',
         'productPrice',
         'discountPrice',
+        'advancePrice',
         'district',
         'reason',
         'description',
@@ -49,7 +50,7 @@ class CallRecorde extends Model
         'updated_at'    => 'datetime',
         'closeDate'     => 'datetime',
         'completeDate'  => 'datetime',
-        
+
     ];
 
     // COMPANY

@@ -65,39 +65,36 @@ const STATUS_OPTIONS = [
 
 export default function Edit({ call, reasons = [], products = [], districts = [] }: Props) {
     const { data, setData, put, processing, errors } = useForm({
-        customerName:         call.customerName        ?? '',
-        customerPhoneNumber:  call.customerPhoneNumber ?? '',
-        customerAddress:      call.customerAddress     ?? '',
-        customerEmail:        call.customerEmail       ?? '',
-        customerCompany:      call.customerCompany     ?? '',
-        district:             call.district            ?? '',
-        reason:               call.reason              ?? '',
-        product:              call.product             ?? '',
-        productModel:         call.productModel        ?? '',
-        productPrice:         call.productPrice        ?? '',
-        discountPrice:        call.discountPrice       ?? '',
+        customerName:         call.customerName         ?? '',
+        customerPhoneNumber:  call.customerPhoneNumber  ?? '',
+        customerAddress:      call.customerAddress      ?? '',
+        customerEmail:        call.customerEmail        ?? '',
+        customerCompany:      call.customerCompany      ?? '',
+        district:             call.district             ?? '',
+        reason:               call.reason               ?? '',
+        product:              call.product              ?? '',
+        productModel:         call.productModel         ?? '',
+        productPrice:         call.productPrice         ?? '',
+        discountPrice:        call.discountPrice        ?? '',
+        advancePrice:         call.advancePrice         ?? '',   // ✅
         callback_date:        call.callback_date
                                 ? new Date(call.callback_date).toISOString().split('T')[0]
                                 : '',
-        status:               call.status              ?? 'pending',
-
+        status:               call.status               ?? 'pending',
         // Fail
-        fail_reason:          call.fail_reason         ?? '',
-
+        fail_reason:          call.fail_reason          ?? '',
         // Close
         closeDate:            call.closeDate
                                 ? new Date(call.closeDate).toISOString().split('T')[0]
                                 : '',
-        closeNote:            call.closeNote           ?? '',
-
+        closeNote:            call.closeNote            ?? '',
         // Complete
         completeDate:         call.completeDate
                                 ? new Date(call.completeDate).toISOString().split('T')[0]
                                 : '',
-        completeNote:         call.completeNote        ?? '',
-
+        completeNote:         call.completeNote         ?? '',
         // Callback
-        is_callback_done:     call.is_callback_done    ?? '',
+        is_callback_done:     call.is_callback_done     ?? '',
         callback_description: call.callback_description ?? '',
     });
 
@@ -246,6 +243,12 @@ export default function Edit({ call, reasons = [], products = [], districts = []
                                 <label className={labelClass}>Discount price</label>
                                 <input type="number" className={inputClass} placeholder="0.00" value={data.discountPrice} onChange={(e) => setData('discountPrice', e.target.value)} />
                                 {errors.discountPrice && <p className="mt-1 text-xs text-red-500">{errors.discountPrice}</p>}
+                            </div>
+                            {/* ✅ Advance Price */}
+                            <div>
+                                <label className={labelClass}>Advance price</label>
+                                <input type="number" className={inputClass} placeholder="0.00" value={data.advancePrice} onChange={(e) => setData('advancePrice', e.target.value)} />
+                                {errors.advancePrice && <p className="mt-1 text-xs text-red-500">{errors.advancePrice}</p>}
                             </div>
                         </div>
                     </div>

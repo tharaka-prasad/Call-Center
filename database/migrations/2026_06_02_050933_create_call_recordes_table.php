@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('productModel')->nullable();
             $table->decimal('productPrice', 12, 2)->default(0)->nullable();
             $table->decimal('discountPrice', 12, 2)->default(0)->nullable();
+            $table->decimal('advancePrice', 12, 2)->default(0)->nullable();
             $table->integer('reason')->nullable();
             $table->integer('district')->nullable();
             $table->text('description')->nullable();

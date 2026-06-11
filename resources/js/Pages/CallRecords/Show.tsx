@@ -133,7 +133,6 @@ export default function Show({ call }: Props) {
                 {/* ── HERO STATUS CARD ── */}
                 <div className={`rounded-2xl border ${cfg.border} ${cfg.headerBg} p-6 flex items-center justify-between shadow-sm`}>
                     <div className="flex items-center gap-4">
-                        {/* Avatar */}
                         <div className="w-14 h-14 rounded-2xl bg-gray-900 flex items-center justify-center shadow-md flex-shrink-0">
                             <span className="text-xl font-black text-white">
                                 {call.customerName?.charAt(0)?.toUpperCase() ?? '?'}
@@ -174,11 +173,11 @@ export default function Show({ call }: Props) {
                                 <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Customer</span>
                             </div>
                             <div className="px-5 py-1">
-                                <DataRow label="Name"    value={call.customerName} accent />
-                                <DataRow label="Phone"   value={call.customerPhoneNumber} />
-                                <DataRow label="Email"   value={call.customerEmail} />
-                                <DataRow label="Company" value={call.customerCompany} />
-                                <DataRow label="Address" value={call.customerAddress} />
+                                <DataRow label="Name"     value={call.customerName} accent />
+                                <DataRow label="Phone"    value={call.customerPhoneNumber} />
+                                <DataRow label="Email"    value={call.customerEmail} />
+                                <DataRow label="Company"  value={call.customerCompany} />
+                                <DataRow label="Address"  value={call.customerAddress} />
                                 <DataRow label="District" value={call.district?.districtName} />
                             </div>
                         </div>
@@ -214,12 +213,19 @@ export default function Show({ call }: Props) {
                             <div className="px-5 py-1">
                                 <DataRow label="Product" value={call.product?.productName} accent />
                                 <DataRow label="Model"   value={call.product_model?.productModel} />
-                                <DataRow label="Unit price"
+                                <DataRow
+                                    label="Unit price"
                                     value={call.productPrice ? `Rs. ${Number(call.productPrice).toLocaleString()}` : null}
                                     accent
                                 />
-                                <DataRow label="Discount price"
+                                <DataRow
+                                    label="Discount price"
                                     value={call.discountPrice ? `Rs. ${Number(call.discountPrice).toLocaleString()}` : null}
+                                />
+                                {/* ✅ NEW: Advance Price */}
+                                <DataRow
+                                    label="Advance price"
+                                    value={call.advancePrice ? `Rs. ${Number(call.advancePrice).toLocaleString()}` : null}
                                 />
                             </div>
                         </div>
@@ -263,7 +269,7 @@ export default function Show({ call }: Props) {
                             </div>
                         </div>
 
-                        {/* Fail / Close details */}
+                        {/* Fail details */}
                         {status === 'fail' && (
                             <div className="bg-white rounded-xl border border-red-100 shadow-sm overflow-hidden">
                                 <div className="flex items-center gap-2 px-5 py-3.5 border-b border-red-100 bg-red-50/60">
@@ -281,6 +287,7 @@ export default function Show({ call }: Props) {
                             </div>
                         )}
 
+                        {/* Close details */}
                         {status === 'close' && (
                             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                                 <div className="flex items-center gap-2 px-5 py-3.5 border-b border-gray-100 bg-gray-50/60">
@@ -296,6 +303,29 @@ export default function Show({ call }: Props) {
                                             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Close note</p>
                                             <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-3 border border-gray-100">
                                                 {call.closeNote}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Complete details */}
+                        {status === 'complete' && (
+                            <div className="bg-white rounded-xl border border-emerald-100 shadow-sm overflow-hidden">
+                                <div className="flex items-center gap-2 px-5 py-3.5 border-b border-emerald-100 bg-emerald-50/60">
+                                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wider">Complete details</span>
+                                </div>
+                                <div className="px-5 py-1">
+                                    <DataRow label="Complete date" value={formatDate(call.completeDate)} accent />
+                                    {call.completeNote && (
+                                        <div className="py-3">
+                                            <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wide mb-2">Complete note</p>
+                                            <p className="text-sm text-gray-700 leading-relaxed bg-emerald-50 rounded-lg p-3 border border-emerald-100">
+                                                {call.completeNote}
                                             </p>
                                         </div>
                                     )}
