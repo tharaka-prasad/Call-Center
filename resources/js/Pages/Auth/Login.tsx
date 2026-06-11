@@ -36,7 +36,7 @@ export default function Login({
                 }
                 .cc-bg {
                     position: absolute; inset: 0;
-                  background-image: url('https://images.unsplash.com/photo-1560264280-88b68371db39?w=1400&q=80');
+                    background-image: url('https://images.unsplash.com/photo-1560264280-88b68371db39?w=1400&q=80');
                     background-position: center;
                     filter: brightness(0.45);
                 }
@@ -105,6 +105,14 @@ export default function Login({
                 .cc-btn:hover:not(:disabled) { background: #0c447c; }
                 .cc-btn:disabled { opacity: .6; cursor: not-allowed; }
                 .cc-divider { height: 1px; background: #e2e6ea; margin: 1.25rem 0; }
+                .cc-register {
+                    text-align: center; font-size: 13px; color: #4a5568;
+                    margin-bottom: 0.75rem;
+                }
+                .cc-register a {
+                    color: #185fa5; font-weight: 600; text-decoration: none;
+                }
+                .cc-register a:hover { text-decoration: underline; }
                 .cc-footer { text-align: center; font-size: 12px; color: #a0aec0; }
             `}</style>
 
@@ -135,7 +143,16 @@ export default function Login({
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                                 </svg>
-                                <input id="email" type="text" name="email" value={data.email} placeholder="e.g. AGT-10482 or email" autoComplete="username" autoFocus onChange={(e) => setData('email', e.target.value)} />
+                                <input
+                                    id="email"
+                                    type="text"
+                                    name="email"
+                                    value={data.email}
+                                    placeholder="e.g. AGT-10482 or email"
+                                    autoComplete="username"
+                                    autoFocus
+                                    onChange={(e) => setData('email', e.target.value)}
+                                />
                             </div>
                             <InputError message={errors.email} className="mt-1" />
                         </div>
@@ -146,18 +163,33 @@ export default function Login({
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                                 </svg>
-                                <input id="password" type="password" name="password" value={data.password} placeholder="••••••••" autoComplete="current-password" onChange={(e) => setData('password', e.target.value)} />
+                                <input
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    placeholder="••••••••"
+                                    autoComplete="current-password"
+                                    onChange={(e) => setData('password', e.target.value)}
+                                />
                             </div>
                             <InputError message={errors.password} className="mt-1" />
                         </div>
 
                         <div className="cc-row">
                             <label className="cc-remember">
-                                <input type="checkbox" name="remember" checked={data.remember} onChange={(e) => setData('remember', (e.target.checked || false) as false)} />
+                                <input
+                                    type="checkbox"
+                                    name="remember"
+                                    checked={data.remember}
+                                    onChange={(e) => setData('remember', (e.target.checked || false) as false)}
+                                />
                                 Keep me signed in
                             </label>
                             {canResetPassword && (
-                                <Link href={route('password.request')} className="cc-forgot">Forgot password?</Link>
+                                <Link href={route('password.request')} className="cc-forgot">
+                                    Forgot password?
+                                </Link>
                             )}
                         </div>
 
@@ -167,6 +199,13 @@ export default function Login({
                     </form>
 
                     <div className="cc-divider" />
+
+                    {/* ✅ Register link */}
+                    <div className="cc-register">
+                        Don't have an account?&nbsp;
+                        <Link href={route('register')}>Create account</Link>
+                    </div>
+
                     <div className="cc-footer">Secured &nbsp;·&nbsp; IT support: ext. 100</div>
                 </div>
             </div>
