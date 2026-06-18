@@ -111,8 +111,16 @@ const STATUS_BADGE: Record<string, string> = {
 
 // ─── USER PANEL ──────────────────────────────────────────────────────────────
 
-function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem }) {
-    const [mode, setMode]           = useState<'list' | 'add' | 'edit'>('list');
+function UserPanel({
+    users,
+    authUser,
+    companies,
+}: {
+    users: UserItem[];
+    authUser: UserItem;
+    companies: Company[];
+}) {
+    const [mode, setMode]               = useState<'list' | 'add' | 'edit'>('list');
     const [editingUser, setEditingUser] = useState<UserItem | null>(null);
     const [deletingId, setDeletingId]   = useState<number | null>(null);
 
@@ -123,6 +131,7 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
         password: '',
         role: 'argent',
         status: 'active',
+        companyid: authUser.role === 'superadmin' ? '' : String(authUser.companyid),
     });
 
     const editForm = useForm({
@@ -132,6 +141,7 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
         password: '',
         role: 'argent' as string,
         status: 'active' as string,
+        companyid: '' as string,
     });
 
     const startEdit = (u: UserItem) => {
@@ -143,6 +153,7 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
             password:  '',
             role:      u.role,
             status:    u.status,
+            companyid: String(u.companyid),
         });
         setMode('edit');
     };
@@ -152,6 +163,9 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
             preserveScroll: true,
             onSuccess: () => {
                 addForm.reset();
+                if (authUser.role !== 'superadmin') {
+                    addForm.setData('companyid', String(authUser.companyid));
+                }
                 setMode('list');
             },
         });
@@ -177,9 +191,11 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
 
     // ── FORM (Add / Edit) ──
     if (mode === 'add' || mode === 'edit') {
-        const form      = mode === 'add' ? addForm : editForm;
-        const onSubmit  = mode === 'add' ? handleAdd : handleUpdate;
-        const title     = mode === 'add' ? 'Add New User' : `Edit — ${editingUser?.firstName} ${editingUser?.lastName}`;
+        const form     = mode === 'add' ? addForm : editForm;
+        const onSubmit = mode === 'add' ? handleAdd : handleUpdate;
+        const title    = mode === 'add'
+            ? 'Add New User'
+            : `Edit — ${editingUser?.firstName} ${editingUser?.lastName}`;
 
         return (
             <div className="space-y-5">
@@ -200,6 +216,7 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
+                    {/* First Name */}
                     <div>
                         <label className={labelClass}>First name</label>
                         <input
@@ -208,8 +225,12 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                             value={form.data.firstName}
                             onChange={e => form.setData('firstName', e.target.value)}
                         />
-                        {form.errors.firstName && <p className="text-xs text-red-500 mt-1">{form.errors.firstName}</p>}
+                        {form.errors.firstName && (
+                            <p className="text-xs text-red-500 mt-1">{form.errors.firstName}</p>
+                        )}
                     </div>
+
+                    {/* Last Name */}
                     <div>
                         <label className={labelClass}>Last name</label>
                         <input
@@ -218,8 +239,12 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                             value={form.data.lastName}
                             onChange={e => form.setData('lastName', e.target.value)}
                         />
-                        {form.errors.lastName && <p className="text-xs text-red-500 mt-1">{form.errors.lastName}</p>}
+                        {form.errors.lastName && (
+                            <p className="text-xs text-red-500 mt-1">{form.errors.lastName}</p>
+                        )}
                     </div>
+
+                    {/* Email */}
                     <div className="col-span-2">
                         <label className={labelClass}>Email</label>
                         <input
@@ -229,11 +254,18 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                             value={form.data.email}
                             onChange={e => form.setData('email', e.target.value)}
                         />
-                        {form.errors.email && <p className="text-xs text-red-500 mt-1">{form.errors.email}</p>}
+                        {form.errors.email && (
+                            <p className="text-xs text-red-500 mt-1">{form.errors.email}</p>
+                        )}
                     </div>
+
+                    {/* Password */}
                     <div className="col-span-2">
                         <label className={labelClass}>
-                            Password {mode === 'edit' && <span className="text-gray-400 font-normal">(leave blank to keep current)</span>}
+                            Password{' '}
+                            {mode === 'edit' && (
+                                <span className="text-gray-400 font-normal">(leave blank to keep current)</span>
+                            )}
                         </label>
                         <input
                             type="password"
@@ -242,8 +274,12 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                             value={form.data.password}
                             onChange={e => form.setData('password', e.target.value)}
                         />
-                        {form.errors.password && <p className="text-xs text-red-500 mt-1">{form.errors.password}</p>}
+                        {form.errors.password && (
+                            <p className="text-xs text-red-500 mt-1">{form.errors.password}</p>
+                        )}
                     </div>
+
+                    {/* Role */}
                     <div>
                         <label className={labelClass}>Role</label>
                         <select
@@ -257,8 +293,12 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                                 <option value="superadmin">Super Admin</option>
                             )}
                         </select>
-                        {form.errors.role && <p className="text-xs text-red-500 mt-1">{form.errors.role}</p>}
+                        {form.errors.role && (
+                            <p className="text-xs text-red-500 mt-1">{form.errors.role}</p>
+                        )}
                     </div>
+
+                    {/* Status */}
                     <div>
                         <label className={labelClass}>Status</label>
                         <select
@@ -269,7 +309,37 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                             <option value="active">Active</option>
                             <option value="inactive">Inactive</option>
                         </select>
-                        {form.errors.status && <p className="text-xs text-red-500 mt-1">{form.errors.status}</p>}
+                        {form.errors.status && (
+                            <p className="text-xs text-red-500 mt-1">{form.errors.status}</p>
+                        )}
+                    </div>
+
+                    {/* Company — superadmin: dropdown | others: read-only */}
+                    <div className="col-span-2">
+                        <label className={labelClass}>Company</label>
+                        {authUser.role === 'superadmin' ? (
+                            <>
+                                <select
+                                    className={inputClass}
+                                    value={form.data.companyid}
+                                    onChange={e => form.setData('companyid', e.target.value)}
+                                >
+                                    <option value="">— Select company —</option>
+                                    {companies.map(c => (
+                                        <option key={c.id} value={c.id}>
+                                            {c.companyName}
+                                        </option>
+                                    ))}
+                                </select>
+                                {form.errors.companyid && (
+                                    <p className="text-xs text-red-500 mt-1">{form.errors.companyid}</p>
+                                )}
+                            </>
+                        ) : (
+                            <div className={`${inputClass} bg-gray-100 text-gray-500 cursor-not-allowed`}>
+                                {companies.find(c => c.id === authUser.companyid)?.companyName ?? '—'}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -337,7 +407,17 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                                     <span className="ml-2 text-xs font-normal text-gray-400">(you)</span>
                                 )}
                             </p>
-                            <p className="text-xs text-gray-400 truncate">{u.email}</p>
+                            <p className="text-xs text-gray-400 truncate">
+                                {u.email}
+                                {authUser.role === 'superadmin' && (
+                                    <>
+                                        <span className="mx-1.5 text-gray-300">·</span>
+                                        <span className="text-gray-400">
+                                            {companies.find(c => c.id === u.companyid)?.companyName ?? '—'}
+                                        </span>
+                                    </>
+                                )}
+                            </p>
                         </div>
 
                         {/* Badges */}
@@ -357,11 +437,15 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                                 <button
                                     onClick={() => handleDelete(u.id)}
                                     className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
-                                >Yes</button>
+                                >
+                                    Yes
+                                </button>
                                 <button
                                     onClick={() => setDeletingId(null)}
                                     className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors"
-                                >{Icon.x}</button>
+                                >
+                                    {Icon.x}
+                                </button>
                             </div>
                         ) : (
                             <div className="flex items-center gap-1 flex-shrink-0">
@@ -369,13 +453,17 @@ function UserPanel({ users, authUser }: { users: UserItem[]; authUser: UserItem 
                                     onClick={() => startEdit(u)}
                                     className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
                                     title="Edit"
-                                >{Icon.edit}</button>
+                                >
+                                    {Icon.edit}
+                                </button>
                                 {u.id !== authUser.id && (
                                     <button
                                         onClick={() => setDeletingId(u.id)}
                                         className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
                                         title="Delete"
-                                    >{Icon.trash}</button>
+                                    >
+                                        {Icon.trash}
+                                    </button>
                                 )}
                             </div>
                         )}
@@ -396,15 +484,18 @@ interface CrudPanelProps {
     fieldKey: string;
 }
 
-function CrudPanel({ title, description, accentColor, icon, placeholder, items, storeRoute, updateRoute, destroyRoute, fieldKey }: CrudPanelProps) {
+function CrudPanel({
+    title, description, accentColor, icon, placeholder,
+    items, storeRoute, updateRoute, destroyRoute, fieldKey,
+}: CrudPanelProps) {
     const [editingId, setEditingId]   = useState<number | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const addForm  = useForm<Record<string, string>>({ [fieldKey]: '' });
     const editForm = useForm<Record<string, string>>({ [fieldKey]: '' });
 
-    const handleAdd = () => addForm.post(route(storeRoute), { preserveScroll: true, onSuccess: () => addForm.reset() });
-    const startEdit = (item: CrudItem) => { setEditingId(item.id); editForm.setData(fieldKey, item.label); };
+    const handleAdd    = () => addForm.post(route(storeRoute), { preserveScroll: true, onSuccess: () => addForm.reset() });
+    const startEdit    = (item: CrudItem) => { setEditingId(item.id); editForm.setData(fieldKey, item.label); };
     const handleUpdate = (id: number) => editForm.put(route(updateRoute, id), { preserveScroll: true, onSuccess: () => setEditingId(null) });
     const handleDelete = (id: number) => router.delete(route(destroyRoute, id), { preserveScroll: true, onSuccess: () => setDeletingId(null) });
 
@@ -424,7 +515,9 @@ function CrudPanel({ title, description, accentColor, icon, placeholder, items, 
                         placeholder={placeholder}
                         className={`w-full px-3.5 py-2.5 text-sm rounded-xl border bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10 transition-all ${addForm.errors[fieldKey] ? 'border-red-300' : 'border-gray-200'}`}
                     />
-                    {addForm.errors[fieldKey] && <p className="text-xs text-red-500 mt-1 pl-1">{addForm.errors[fieldKey]}</p>}
+                    {addForm.errors[fieldKey] && (
+                        <p className="text-xs text-red-500 mt-1 pl-1">{addForm.errors[fieldKey]}</p>
+                    )}
                 </div>
                 <button
                     onClick={handleAdd}
@@ -442,7 +535,10 @@ function CrudPanel({ title, description, accentColor, icon, placeholder, items, 
                     </div>
                 )}
                 {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all">
+                    <div
+                        key={item.id}
+                        className="flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-white rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all"
+                    >
                         <span className={`flex-shrink-0 ${accentColor}`}>{icon}</span>
                         {editingId === item.id ? (
                             <>
@@ -451,23 +547,57 @@ function CrudPanel({ title, description, accentColor, icon, placeholder, items, 
                                     type="text"
                                     value={editForm.data[fieldKey]}
                                     onChange={e => editForm.setData(fieldKey, e.target.value)}
-                                    onKeyDown={e => { if (e.key === 'Enter') handleUpdate(item.id); if (e.key === 'Escape') setEditingId(null); }}
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter')  handleUpdate(item.id);
+                                        if (e.key === 'Escape') setEditingId(null);
+                                    }}
                                     className={`flex-1 px-2.5 py-1.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:ring-gray-900/10 bg-white transition-all ${editForm.errors[fieldKey] ? 'border-red-300' : 'border-gray-300'}`}
                                 />
-                                <button onClick={() => handleUpdate(item.id)} disabled={editForm.processing} className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors">{Icon.check}</button>
-                                <button onClick={() => setEditingId(null)} className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors">{Icon.x}</button>
+                                <button
+                                    onClick={() => handleUpdate(item.id)}
+                                    disabled={editForm.processing}
+                                    className="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors"
+                                >
+                                    {Icon.check}
+                                </button>
+                                <button
+                                    onClick={() => setEditingId(null)}
+                                    className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors"
+                                >
+                                    {Icon.x}
+                                </button>
                             </>
                         ) : deletingId === item.id ? (
                             <>
                                 <span className="flex-1 text-sm text-red-500 font-medium">Delete "{item.label}"?</span>
-                                <button onClick={() => handleDelete(item.id)} className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors">Delete</button>
-                                <button onClick={() => setDeletingId(null)} className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors">{Icon.x}</button>
+                                <button
+                                    onClick={() => handleDelete(item.id)}
+                                    className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
+                                >
+                                    Delete
+                                </button>
+                                <button
+                                    onClick={() => setDeletingId(null)}
+                                    className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors"
+                                >
+                                    {Icon.x}
+                                </button>
                             </>
                         ) : (
                             <>
                                 <span className="flex-1 text-sm font-medium text-gray-800">{item.label}</span>
-                                <button onClick={() => startEdit(item)} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors">{Icon.edit}</button>
-                                <button onClick={() => setDeletingId(item.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">{Icon.trash}</button>
+                                <button
+                                    onClick={() => startEdit(item)}
+                                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+                                >
+                                    {Icon.edit}
+                                </button>
+                                <button
+                                    onClick={() => setDeletingId(item.id)}
+                                    className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                                >
+                                    {Icon.trash}
+                                </button>
                             </>
                         )}
                     </div>
@@ -498,30 +628,73 @@ function ProductPanel({ products }: { products: Product[] }) {
             <div className="space-y-4">
                 <div>
                     <label className={labelClass}>Product name</label>
-                    <input type="text" placeholder="e.g. Air Conditioner" value={data.productName} onChange={e => setData('productName', e.target.value)} className={inputClass} />
+                    <input
+                        type="text"
+                        placeholder="e.g. Air Conditioner"
+                        value={data.productName}
+                        onChange={e => setData('productName', e.target.value)}
+                        className={inputClass}
+                    />
                 </div>
                 <div className="space-y-2">
                     <label className={labelClass}>Models</label>
                     {data.models.map((model, index) => (
                         <div key={index} className="grid grid-cols-5 gap-2 p-3 bg-gray-50 rounded-xl border border-gray-100">
-                            <input type="text" placeholder="Model name" value={model.productModel} onChange={e => { const u = [...data.models]; u[index].productModel = e.target.value; setData('models', u); }} className="col-span-2 px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10" />
-                            <input type="number" placeholder="Price" value={model.price} onChange={e => { const u = [...data.models]; u[index].price = e.target.value; setData('models', u); }} className="col-span-2 px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10" />
-                            <button type="button" onClick={() => removeModelRow(index)} className="flex items-center justify-center p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 transition-colors">{Icon.trash}</button>
+                            <input
+                                type="text"
+                                placeholder="Model name"
+                                value={model.productModel}
+                                onChange={e => {
+                                    const u = [...data.models];
+                                    u[index].productModel = e.target.value;
+                                    setData('models', u);
+                                }}
+                                className="col-span-2 px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                            />
+                            <input
+                                type="number"
+                                placeholder="Price"
+                                value={model.price}
+                                onChange={e => {
+                                    const u = [...data.models];
+                                    u[index].price = e.target.value;
+                                    setData('models', u);
+                                }}
+                                className="col-span-2 px-3 py-2 text-sm rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => removeModelRow(index)}
+                                className="flex items-center justify-center p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
+                            >
+                                {Icon.trash}
+                            </button>
                         </div>
                     ))}
-                    <button type="button" onClick={addModelRow} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <button
+                        type="button"
+                        onClick={addModelRow}
+                        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
                         {Icon.plus} Add model row
                     </button>
                 </div>
                 <div className="flex justify-end">
-                    <button type="button" onClick={saveProduct} disabled={processing} className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-gray-700 disabled:opacity-40 text-white text-sm font-semibold rounded-xl transition-colors">
+                    <button
+                        type="button"
+                        onClick={saveProduct}
+                        disabled={processing}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-gray-700 disabled:opacity-40 text-white text-sm font-semibold rounded-xl transition-colors"
+                    >
                         {Icon.check} Save product
                     </button>
                 </div>
             </div>
             <div className="pt-4 border-t border-gray-100 space-y-3">
                 <h4 className="text-sm font-bold text-gray-700">Existing products</h4>
-                {products.length === 0 && <p className="text-sm text-gray-300 text-center py-6">No products yet.</p>}
+                {products.length === 0 && (
+                    <p className="text-sm text-gray-300 text-center py-6">No products yet.</p>
+                )}
                 {products.map(product => (
                     <div key={product.id} className="bg-gray-50 rounded-xl border border-gray-100 overflow-hidden">
                         <div className="px-4 py-3 flex items-center gap-2 border-b border-gray-100">
@@ -530,7 +703,12 @@ function ProductPanel({ products }: { products: Product[] }) {
                             <span className="ml-auto text-xs text-gray-400">{product.models.length} model(s)</span>
                         </div>
                         <table className="w-full text-sm">
-                            <thead><tr className="text-left border-b border-gray-100"><th className="py-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Model</th><th className="py-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Price</th></tr></thead>
+                            <thead>
+                                <tr className="text-left border-b border-gray-100">
+                                    <th className="py-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Model</th>
+                                    <th className="py-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wide">Price</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {product.models.map((m, i) => (
                                     <tr key={i} className="border-b border-gray-50 last:border-0">
@@ -549,7 +727,15 @@ function ProductPanel({ products }: { products: Product[] }) {
 
 // ─── PAGE CONTENT ─────────────────────────────────────────────────────────────
 
-function PageContent({ activeId, districts, reasons, companies, products, users, authUser }: {
+function PageContent({
+    activeId,
+    districts,
+    reasons,
+    companies,
+    products,
+    users,
+    authUser,
+}: {
     activeId: string;
     districts: District[];
     reasons: Reason[];
@@ -558,28 +744,57 @@ function PageContent({ activeId, districts, reasons, companies, products, users,
     users: UserItem[];
     authUser: UserItem;
 }) {
-    if (activeId === 'users-list') return <UserPanel users={users} authUser={authUser} />;
-    if (activeId === 'products')   return <ProductPanel products={products} />;
+    if (activeId === 'users-list') return (
+        <UserPanel users={users} authUser={authUser} companies={companies} />
+    );
+
+    if (activeId === 'products') return <ProductPanel products={products} />;
 
     if (activeId === 'districts') return (
-        <CrudPanel key="districts" title="Districts" description="Manage district list used for customer location."
-            accentColor="text-emerald-500" icon={Icon.district} placeholder="New district name…"
+        <CrudPanel
+            key="districts"
+            title="Districts"
+            description="Manage district list used for customer location."
+            accentColor="text-emerald-500"
+            icon={Icon.district}
+            placeholder="New district name…"
             items={districts.map(d => ({ id: d.id, label: d.districtName }))}
-            storeRoute="districts.store" updateRoute="districts.update" destroyRoute="districts.destroy" fieldKey="districtName"
+            storeRoute="districts.store"
+            updateRoute="districts.update"
+            destroyRoute="districts.destroy"
+            fieldKey="districtName"
         />
     );
+
     if (activeId === 'reasons') return (
-        <CrudPanel key="reasons" title="Reasons" description="Manage call reasons used in call records."
-            accentColor="text-orange-500" icon={Icon.reason} placeholder="New reason…"
+        <CrudPanel
+            key="reasons"
+            title="Reasons"
+            description="Manage call reasons used in call records."
+            accentColor="text-orange-500"
+            icon={Icon.reason}
+            placeholder="New reason…"
             items={reasons.map(r => ({ id: r.id, label: r.reason }))}
-            storeRoute="reasons.store" updateRoute="reasons.update" destroyRoute="reasons.destroy" fieldKey="reason"
+            storeRoute="reasons.store"
+            updateRoute="reasons.update"
+            destroyRoute="reasons.destroy"
+            fieldKey="reason"
         />
     );
+
     if (activeId === 'company-general') return (
-        <CrudPanel key="company-general" title="Company Names" description="Manage company names used in call records."
-            accentColor="text-blue-500" icon={Icon.company} placeholder="New company name…"
+        <CrudPanel
+            key="company-general"
+            title="Company Names"
+            description="Manage company names used in call records."
+            accentColor="text-blue-500"
+            icon={Icon.company}
+            placeholder="New company name…"
             items={companies.map(c => ({ id: c.id, label: c.companyName }))}
-            storeRoute="company.store" updateRoute="company.update" destroyRoute="company.destroy" fieldKey="companyName"
+            storeRoute="company.store"
+            updateRoute="company.update"
+            destroyRoute="company.destroy"
+            fieldKey="companyName"
         />
     );
 
@@ -596,7 +811,14 @@ function PageContent({ activeId, districts, reasons, companies, products, users,
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 
-export default function Settings({ districts = [], reasons = [], companies = [], products = [], users = [], flash }: Props) {
+export default function Settings({
+    districts = [],
+    reasons = [],
+    companies = [],
+    products = [],
+    users = [],
+    flash,
+}: Props) {
     const { auth } = usePage<Props>().props;
     const authUser = auth.user;
 
@@ -604,7 +826,9 @@ export default function Settings({ districts = [], reasons = [], companies = [],
     const [activeItem, setActiveItem]     = useState<string>('company-general');
 
     const toggle = (id: string) =>
-        setOpenSections(prev => prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]);
+        setOpenSections(prev =>
+            prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
+        );
 
     return (
         <AuthenticatedLayout

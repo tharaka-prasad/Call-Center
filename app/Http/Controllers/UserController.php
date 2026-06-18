@@ -15,7 +15,7 @@ class UserController extends Controller
      * superadmin  → all users
      * companyadmin → only users in their company
      */
-    
+
 
     /**
      * Store a new user.
@@ -29,8 +29,9 @@ class UserController extends Controller
             'lastName'  => 'required|string|max:100',
             'email'     => 'required|email|unique:users,email',
             'password'  => 'required|string|min:6',
-            'role'      => ['required', Rule::in(['companyadmin', 'argent'])],
+            'role'      => ['required', Rule::in(['admin', 'argent', 'superadmin'])],
             'status'    => ['required', Rule::in(['active', 'inactive'])],
+            'companyid' => 'required|integer|exists:campanies,id',
         ]);
 
         // companyadmin can only create users for their own company
@@ -60,7 +61,7 @@ class UserController extends Controller
         $user     = User::findOrFail($id);
 
         // companyadmin can only edit users in their own company
-        if ($authUser->role === 'companyadmin' && $user->companyid !== $authUser->companyid) {
+        if ($authUser->role === 'admin' && $user->companyid !== $authUser->companyid) {
             abort(403);
         }
 
@@ -68,9 +69,10 @@ class UserController extends Controller
             'firstName' => 'required|string|max:100',
             'lastName'  => 'required|string|max:100',
             'email'     => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'role'      => ['required', Rule::in(['companyadmin', 'argent'])],
+            'role'      => ['required', Rule::in(['admin', 'argent', 'superadmin'])],
             'status'    => ['required', Rule::in(['active', 'inactive'])],
             'password'  => 'nullable|string|min:6',
+            'companyid' => 'required|integer|exists:campanies,id',
         ]);
 
         $updateData = [
@@ -79,6 +81,7 @@ class UserController extends Controller
             'email'     => $request->email,
             'role'      => $request->role,
             'status'    => $request->status,
+            'companyid' => $request->companyid,
         ];
 
         if ($request->filled('password')) {
