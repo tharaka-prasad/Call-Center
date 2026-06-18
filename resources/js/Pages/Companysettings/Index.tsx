@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { useState } from 'react';
 import { useForm, router, usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 
 // ─── TYPES ───────────────────────────────────────────────────────────────────
 
@@ -12,6 +13,7 @@ interface Product  { id: number; productName: string; models: ProductModel[]; }
 
 interface UserItem {
     id: number;
+    name: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -20,7 +22,7 @@ interface UserItem {
     companyid: number;
 }
 
-interface Props {
+interface Props extends PageProps {
     districts?: District[];
     reasons?: Reason[];
     companies?: Company[];
