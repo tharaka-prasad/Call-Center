@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReasonController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,6 +24,8 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
+
+    
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -53,6 +56,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/report', [ReportController::class, 'index'])
         ->name('report.index');
+    Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
 
     Route::get('/company-settings', [CompanyDeatailsController::class, 'index'])
         ->name('company.index');

@@ -25,6 +25,7 @@ class CallRecordeController extends Controller
             'creator',
         ])
             ->where('companyId', $user->companyid)
+            ->where('createdBy', $user->id) // Login userge records witharai
             ->latest()
             ->get();
 
