@@ -69,10 +69,10 @@ class UserController extends Controller
             'firstName' => 'required|string|max:100',
             'lastName'  => 'required|string|max:100',
             'email'     => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
-            'role'      => ['required', Rule::in(['admin', 'argent', 'superadmin'])],
+            'role'      => ['required', Rule::in(['companyadmin', 'argent', 'superadmin'])],
             'status'    => ['required', Rule::in(['active', 'inactive'])],
             'password'  => 'nullable|string|min:6',
-            'companyid' => 'required|integer|exists:campanies,id',
+            'companyid' => 'nullable|integer|exists:campanies,id',
         ]);
 
         $updateData = [
